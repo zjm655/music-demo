@@ -1,15 +1,60 @@
 <script setup lang="ts">
 import PlaylistCard from './PlaylistCard.vue'
-import PlaylistSpot from './PlaylistSpot.vue'
-import { ref, reactive } from 'vue'
+import PlaylistNav from './PlaylistNav.vue'
+import PlaylistDots from './PlaylistDots.vue'
+import { ref, reactive, computed, onMounted, onBeforeUnmount } from 'vue'
+
 const activeTab = ref(0)
-const activeSpot = ref(0)
+const currentPage = ref(0)
+const containerWidth = ref(0)
 const playlistTab = ['为你推荐', '官方歌单', '情歌', '网络歌曲', '经典', 'KTV热歌']
 const cards = reactive([1, 2, 3, 4, 5])
 const lists = reactive([1, 2, 3, 4, 5])
+
+const listsRef = ref<HTMLElement | null>(null)
+let resizeObserver: ResizeObserver | null = null
+
+const translateX = computed(() => -currentPage.value * containerWidth.value)
+
+const listsStyle = computed(() => ({
+  transform: `translateX(${translateX.value}px)`,
+  transition: 'transform 0.4s ease',
+}))
+
 function switchTab(index: number) {
   activeTab.value = index
 }
+
+function goToPage(index: number) {
+  currentPage.value = index
+}
+
+function prevPage() {
+  currentPage.value = (currentPage.value - 1 + lists.length) % lists.length
+}
+
+function nextPage() {
+  currentPage.value = (currentPage.value + 1) % lists.length
+}
+
+onMounted(() => {
+  if (listsRef.value) {
+    containerWidth.value = listsRef.value.offsetWidth
+    resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        containerWidth.value = entry.contentRect.width
+      }
+    })
+    resizeObserver.observe(listsRef.value)
+  }
+})
+
+onBeforeUnmount(() => {
+  if (resizeObserver) {
+    resizeObserver.disconnect()
+    resizeObserver = null
+  }
+})
 </script>
 
 <template>
@@ -17,39 +62,45 @@ function switchTab(index: number) {
     <div class="playlist-hot__title">
       <h2 class="playlist-hot__h2--title">热门歌单</h2>
     </div>
-    <nav class="playlist-hot-nav">
-      <span
-        class="playlist-hot-nav__tab"
-        v-for="(tab, index) in playlistTab"
-        :key="index"
-        :class="{ 'playlist-hot-nav__tab--active': activeTab === Number(index) }"
-        @click="switchTab(Number(index))"
-        >{{ tab }}
-      </span>
-    </nav>
-    <div class="platlist-hot__lists">
-      <div class="playlist-hot__list" v-for="(list, index) in lists" :key="index">
-        <div class="playlist-hot__card" v-for="(card, index) in cards" :key="index">
-          <playlist-card />
+    <playlist-nav
+      :tabs="playlistTab"
+      :active-tab="activeTab"
+      @tab-change="switchTab"
+    />
+    <div class="playlist-hot__carousel">
+      <button
+        class="playlist-hot__pager playlist-hot__pager--prev"
+        @click="prevPage"
+      >
+        <span class="playlist-hot__arrow playlist-hot__arrow--left"></span>
+      </button>
+      <div class="platlist-hot__lists" ref="listsRef" :style="listsStyle">
+        <div class="playlist-hot__list" v-for="(list, index) in lists" :key="index">
+          <div class="playlist-hot__card" v-for="(card, index) in cards" :key="index">
+            <playlist-card />
+          </div>
         </div>
       </div>
+      <button
+        class="playlist-hot__pager playlist-hot__pager--next"
+        @click="nextPage"
+      >
+        <span class="playlist-hot__arrow playlist-hot__arrow--right"></span>
+      </button>
     </div>
-    <div class="playlist-hot__spots">
-      <playlist-spot
-        class="playlist-hot__spot"
-        v-for="(list, index) in lists"
-        :key="index"
-        :class="{ '.playlist-spot-main--active': activeSpot === Number(index) }"
-      />
-    </div>
+    <playlist-dots
+      :total="lists.length"
+      :active-index="currentPage"
+      @dot-click="goToPage"
+    />
   </div>
 </template>
 
 <style scoped>
 .playlist-hot {
-  /* height: calc(0.8 * clamp(80vw, 75vw + 150px, 100vw)); */
   overflow: hidden;
-  gap: 10px;
+  gap: var(--space-md);
+  position: relative;
 }
 
 .playlist-hot__title {
@@ -62,29 +113,18 @@ function switchTab(index: number) {
   letter-spacing: 10px;
 }
 
-.playlist-hot-nav {
-  display: flex;
-  justify-content: center;
-}
-
-.playlist-hot-nav__tab {
-  display: inline-block;
-  text-align: center;
-  cursor: pointer;
-  margin-left: clamp(10px, calc(4%), 50px);
-}
-
-.playlist-hot-nav__tab--active {
-  color: var(--color-secondary-hover);
+.playlist-hot__carousel {
+  position: relative;
+  overflow: hidden;
 }
 
 .playlist-hot__card {
-  width: 18%;
+  width: 17%;
 }
 
 .playlist-hot__list {
   display: flex;
-  gap: 10px;
+  gap: var(--space-md);
   justify-content: center;
   align-items: center;
   width: clamp(80vw, calc(75vw + 150px), 100vw);
@@ -97,10 +137,59 @@ function switchTab(index: number) {
   align-items: center;
 }
 
-.playlist-hot__spots {
+/* Pager buttons */
+.playlist-hot__pager {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(4px);
+  cursor: pointer;
   display: flex;
-  justify-content: center;
   align-items: center;
-  gap: 10px;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity var(--transition-normal);
+  box-shadow: var(--shadow-sm);
+}
+
+.playlist-hot:hover .playlist-hot__pager {
+  opacity: 1;
+}
+
+.playlist-hot__pager--prev {
+  left: var(--space-sm);
+}
+
+.playlist-hot__pager--next {
+  right: var(--space-sm);
+}
+
+.playlist-hot__pager:hover {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+/* Arrow icons using CSS border trick */
+.playlist-hot__arrow {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-top: 2px solid var(--color-primary);
+  border-left: 2px solid var(--color-primary);
+}
+
+.playlist-hot__arrow--left {
+  transform: rotate(-45deg);
+  margin-left: 3px;
+}
+
+.playlist-hot__arrow--right {
+  transform: rotate(135deg);
+  margin-right: 3px;
 }
 </style>

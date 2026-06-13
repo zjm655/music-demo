@@ -1,19 +1,25 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+defineProps<{
+  active?: boolean
+}>()
+</script>
 
 <template>
-  <div class="playlist-spot-main"></div>
+  <div class="playlist-spot-main" :class="{ 'playlist-spot-main--active': active }"></div>
 </template>
 
 <style scoped>
 .playlist-spot-main {
-  /* 圆点基础尺寸 */
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  /* 默认样式 */
   background-color: #ccc;
   cursor: pointer;
-  transition: all 0.2s ease;
-  /* 可选：间距由父容器控制，这里不设margin */
+  transition: all var(--transition-normal);
+}
+.playlist-spot-main--active {
+  background-color: var(--color-primary);
+  width: 14px;
+  height: 14px;
 }
 </style>
