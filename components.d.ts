@@ -18,6 +18,7 @@ declare module 'vue' {
     MusicFooter: typeof import('./src/components/App/MusicFooter.vue')['default']
     MusicHeader: typeof import('./src/components/App/MusicHeader.vue')['default']
     MusicListCards: typeof import('./src/components/MusicRecommend/MusicListCards.vue')['default']
+    MusicRecommendCard: typeof import('./src/components/MusicRecommend/MusicRecommendCard.vue')['default']
     MvListCard: typeof import('./src/components/MvRecommend/MvListCard.vue')['default']
     MvListCards: typeof import('./src/components/MvRecommend/MvListCards.vue')['default']
     PlaylistCard: typeof import('./src/components/PlaylistHot/PlaylistCard.vue')['default']
@@ -28,5 +29,6 @@ declare module 'vue' {
     RecommendMusic: typeof import('./src/components/MusicRecommend/RecommendMusic.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    SongCard: typeof import('./src/components/MusicRecommend/SongCard.vue')['default']
   }
 }

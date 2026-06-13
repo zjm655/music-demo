@@ -10,16 +10,16 @@ defineProps<{
 
 <style scoped>
 .playlist-spot-main {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background-color: #ccc;
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-border-strong, #d1d5db);
   cursor: pointer;
   transition: all var(--transition-normal);
 }
 .playlist-spot-main--active {
   background-color: var(--color-primary);
-  width: 14px;
-  height: 14px;
+  width: 20px;
+  border-radius: var(--radius-full);
 }
 </style>

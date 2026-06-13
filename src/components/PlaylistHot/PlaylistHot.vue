@@ -99,7 +99,7 @@ onBeforeUnmount(() => {
 <style scoped>
 .playlist-hot {
   overflow: hidden;
-  gap: var(--space-md);
+  gap: var(--space-lg, 16px);
   position: relative;
 }
 
@@ -119,12 +119,12 @@ onBeforeUnmount(() => {
 }
 
 .playlist-hot__card {
-  width: 17%;
+  width: 16%;
 }
 
 .playlist-hot__list {
   display: flex;
-  gap: var(--space-md);
+  gap: var(--space-lg);
   justify-content: center;
   align-items: center;
   width: clamp(80vw, calc(75vw + 150px), 100vw);

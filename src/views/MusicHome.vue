@@ -20,7 +20,7 @@ import MvListCards from '@/components/MvRecommend/MvListCards.vue'
 .home-main {
   display: flex;
   flex-direction: column;
-  gap: 30px;
-  margin-top: 50px;
+  gap: 40px;
+  margin-top: 30px;
 }
 </style>
