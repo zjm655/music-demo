@@ -41,11 +41,11 @@ __screenshots__/
 
 .env
 .env.development
-.env
-.env.development
 
 .trae/
 .agent/
 AGENTS.md
 skills-lock.json
 .vite/
+
+public/backgound1
