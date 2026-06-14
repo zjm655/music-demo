@@ -41,6 +41,8 @@ __screenshots__/
 
 .env
 .env.development
+.env
+.env.development
 
 .trae/
 .agent/
