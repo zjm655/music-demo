@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
+import { useThemeStore } from '@/stores/theme'
 import { Search } from '@element-plus/icons-vue'
 import { Moon, Sunny, ArrowDown } from '@element-plus/icons-vue'
 const bgMode = ref(false)
@@ -41,7 +42,11 @@ const drawer = ref(false)
         <template #dropdown>
           <el-dropdown-menu>
             <el-dropdown-item v-for="(imageSrc, index) in backgroundImage" :key="index"
-              ><el-image style="width: 100px; height: 90px" :src="imageSrc"></el-image
+              ><el-image
+                style="width: 100px; height: 90px"
+                :src="imageSrc"
+                @click="useThemeStore().setBg(Number(index))"
+              ></el-image
             ></el-dropdown-item>
           </el-dropdown-menu>
         </template>
@@ -97,7 +102,11 @@ const drawer = ref(false)
           <template #dropdown>
             <el-dropdown-menu>
               <el-dropdown-item v-for="(imageSrc, index) in backgroundImage" :key="index"
-                ><el-image style="width: 100px; height: 90px" :src="imageSrc"></el-image
+                ><el-image
+                  style="width: 100px; height: 90px"
+                  :src="imageSrc"
+                  @click="useThemeStore().setBg(Number(index))"
+                ></el-image
               ></el-dropdown-item>
             </el-dropdown-menu>
           </template>

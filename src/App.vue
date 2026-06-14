@@ -1,10 +1,15 @@
 <script setup lang="ts">
 import MusicHeader from '@/components/App/MusicHeader.vue'
 import MusicFooter from '@/components/App/MusicFooter.vue'
+import { useThemeStore } from './stores/theme'
+import { computed } from 'vue'
+const appStyle = computed(() => ({
+  backgroundImage: `url(${useThemeStore().currentBackground})`,
+}))
 </script>
 
 <template>
-  <div class="app">
+  <div class="app" :style="appStyle">
     <header class="app-header">
       <music-header />
     </header>
@@ -18,10 +23,6 @@ import MusicFooter from '@/components/App/MusicFooter.vue'
 </template>
 
 <style scoped>
-.app {
-  background: url(/background/image1.png);
-  /* height: 100vh; */
-}
 .app-header {
   margin: 0 auto;
   background: var(--gradient-page);
