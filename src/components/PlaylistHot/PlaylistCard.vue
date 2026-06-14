@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Headset } from '@element-plus/icons-vue'
 interface Props {
   title?: string
   playCount?: string
@@ -8,7 +9,7 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   title: '每日推荐歌单 | 经典华语流行歌曲精选',
   playCount: '128万',
-  imageUrl: '../../../public/favicon.ico',
+  imageUrl: '/favicon.ico',
 })
 </script>
 
@@ -24,7 +25,9 @@ const props = withDefaults(defineProps<Props>(), {
     <!-- Text section -->
     <div class="card-info">
       <p class="card-title" :title="props.title">{{ props.title }}</p>
-      <span class="card-play-count">♫ {{ props.playCount }}</span>
+      <span class="card-play-count"
+        ><el-icon><Headset /></el-icon>{{ props.playCount }}</span
+      >
     </div>
   </div>
 </template>
@@ -120,7 +123,8 @@ const props = withDefaults(defineProps<Props>(), {
 }
 
 .card-play-count {
-  display: block;
+  display: flex;
+  align-items: center;
   font-size: var(--font-size-xs, 12px);
   color: var(--color-text-secondary, #909399);
   margin-top: var(--space-xs, 4px);

@@ -11,7 +11,14 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    ElButton: typeof import('element-plus/es')['ElButton']
+    ElDrawer: typeof import('element-plus/es')['ElDrawer']
+    ElDropdown: typeof import('element-plus/es')['ElDropdown']
+    ElDropdownItem: typeof import('element-plus/es')['ElDropdownItem']
+    ElDropdownMenu: typeof import('element-plus/es')['ElDropdownMenu']
+    ElIcon: typeof import('element-plus/es')['ElIcon']
     ElImage: typeof import('element-plus/es')['ElImage']
+    ElSwitch: typeof import('element-plus/es')['ElSwitch']
     HomeFooter: typeof import('./src/components/MusicHome/HomeFooter.vue')['default']
     HomeHeader: typeof import('./src/components/MusicHome/HomeHeader.vue')['default']
     HotPlaylist: typeof import('./src/components/PlaylistHot/HotPlaylist.vue')['default']
@@ -19,6 +26,7 @@ declare module 'vue' {
     MusicHeader: typeof import('./src/components/App/MusicHeader.vue')['default']
     MusicListCards: typeof import('./src/components/MusicRecommend/MusicListCards.vue')['default']
     MusicRecommendCard: typeof import('./src/components/MusicRecommend/MusicRecommendCard.vue')['default']
+    MvCard: typeof import('./src/components/MvRecommend/MvCard.vue')['default']
     MvListCard: typeof import('./src/components/MvRecommend/MvListCard.vue')['default']
     MvListCards: typeof import('./src/components/MvRecommend/MvListCards.vue')['default']
     PlaylistCard: typeof import('./src/components/PlaylistHot/PlaylistCard.vue')['default']

@@ -2,58 +2,18 @@
 import MusicRecommendCard from './MusicRecommendCard.vue'
 import PlaylistNav from '@/components/PlaylistHot/PlaylistNav.vue'
 import PlaylistDots from '@/components/PlaylistHot/PlaylistDots.vue'
-import { ref, reactive, computed, onMounted, onBeforeUnmount } from 'vue'
+import { useCarousel } from '@/hooks/useCarousel'
+import { ref, reactive } from 'vue'
 
 const activeTab = ref(0)
-const currentPage = ref(0)
-const containerWidth = ref(0)
 const musicTab = ['最新', '内地', '港台', '欧美', '韩国', '日本']
 const pages = reactive([1, 2, 3, 4, 5, 6])
 
-const listsRef = ref<HTMLElement | null>(null)
-let resizeObserver: ResizeObserver | null = null
-
-const translateX = computed(() => -currentPage.value * containerWidth.value)
-
-const listsStyle = computed(() => ({
-  transform: `translateX(${translateX.value}px)`,
-  transition: 'transform 0.4s ease',
-}))
+const { currentPage, listsRef, listsStyle, prevPage, nextPage, goToPage, onTouchStart, onTouchMove, onTouchEnd } = useCarousel({ totalPages: pages.length })
 
 function switchTab(index: number) {
   activeTab.value = index
 }
-
-function goToPage(index: number) {
-  currentPage.value = index
-}
-
-function prevPage() {
-  currentPage.value = (currentPage.value - 1 + pages.length) % pages.length
-}
-
-function nextPage() {
-  currentPage.value = (currentPage.value + 1) % pages.length
-}
-
-onMounted(() => {
-  if (listsRef.value) {
-    containerWidth.value = listsRef.value.offsetWidth
-    resizeObserver = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        containerWidth.value = entry.contentRect.width
-      }
-    })
-    resizeObserver.observe(listsRef.value)
-  }
-})
-
-onBeforeUnmount(() => {
-  if (resizeObserver) {
-    resizeObserver.disconnect()
-    resizeObserver = null
-  }
-})
 </script>
 
 <template>
@@ -70,7 +30,14 @@ onBeforeUnmount(() => {
       <button class="music-recommend__pager music-recommend__pager--prev" @click="prevPage">
         <span class="music-recommend__arrow music-recommend__arrow--left"></span>
       </button>
-      <div class="music-recommend__lists" ref="listsRef" :style="listsStyle">
+      <div
+        class="music-recommend__lists"
+        ref="listsRef"
+        :style="listsStyle"
+        @touchstart="onTouchStart"
+        @touchmove="onTouchMove"
+        @touchend="onTouchEnd"
+      >
         <div class="music-recommend__page" v-for="(page, index) in pages" :key="index">
           <music-recommend-card />
         </div>

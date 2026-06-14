@@ -14,15 +14,15 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   songs: () => [
-    { name: '晴天', artist: '周杰伦', duration: '4:29', coverUrl: '../../../public/favicon.ico' },
-    { name: '起风了', artist: '买辣椒也用券', duration: '5:12', coverUrl: '../../../public/favicon.ico' },
-    { name: '孤勇者', artist: '陈奕迅', duration: '4:16', coverUrl: '../../../public/favicon.ico' },
-    { name: '稻香', artist: '周杰伦', duration: '3:43', coverUrl: '../../../public/favicon.ico' },
-    { name: '光年之外', artist: '邓紫棋', duration: '3:55', coverUrl: '../../../public/favicon.ico' },
-    { name: '漠河舞厅', artist: '柳爽', duration: '4:44', coverUrl: '../../../public/favicon.ico' },
-    { name: '错位时空', artist: '艾辰', duration: '3:38', coverUrl: '../../../public/favicon.ico' },
-    { name: '平凡之路', artist: '朴树', duration: '4:46', coverUrl: '../../../public/favicon.ico' },
-    { name: '夜曲', artist: '周杰伦', duration: '3:46', coverUrl: '../../../public/favicon.ico' },
+    { name: '晴天', artist: '周杰伦', duration: '4:29', coverUrl: '/favicon.ico' },
+    { name: '起风了', artist: '买辣椒也用券', duration: '5:12', coverUrl: '/favicon.ico' },
+    { name: '孤勇者', artist: '陈奕迅', duration: '4:16', coverUrl: '/favicon.ico' },
+    { name: '稻香', artist: '周杰伦', duration: '3:43', coverUrl: '/favicon.ico' },
+    { name: '光年之外', artist: '邓紫棋', duration: '3:55', coverUrl: '/favicon.ico' },
+    { name: '漠河舞厅', artist: '柳爽', duration: '4:44', coverUrl: '/favicon.ico' },
+    { name: '错位时空', artist: '艾辰', duration: '3:38', coverUrl: '/favicon.ico' },
+    { name: '平凡之路', artist: '朴树', duration: '4:46', coverUrl: '/favicon.ico' },
+    { name: '夜曲', artist: '周杰伦', duration: '3:46', coverUrl: '/favicon.ico' },
   ],
 })
 </script>
@@ -61,7 +61,8 @@ const props = withDefaults(defineProps<Props>(), {
   border: none;
   border-radius: var(--radius-sm, 6px);
   cursor: pointer;
-  transition: background var(--transition-fast, 0.15s),
+  transition:
+    background var(--transition-fast, 0.15s),
     color var(--transition-fast, 0.15s);
 }
 
@@ -70,10 +71,22 @@ const props = withDefaults(defineProps<Props>(), {
   color: #ffffff;
 }
 
-/* 3x3 song grid */
+/* Song grid */
 .song-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: var(--space-sm, 8px);
+}
+
+@media (max-width: 600px) {
+  .song-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 400px) {
+  .song-grid {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

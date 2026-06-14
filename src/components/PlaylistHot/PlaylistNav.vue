@@ -17,7 +17,8 @@ const emit = defineEmits<{
       class="playlist-hot-nav__tab"
       :class="{ 'playlist-hot-nav__tab--active': index === activeTab }"
       @click="emit('tab-change', index)"
-    >{{ tab }}</span>
+      >{{ tab }}</span
+    >
   </nav>
 </template>
 
@@ -25,6 +26,7 @@ const emit = defineEmits<{
 .playlist-hot-nav {
   display: flex;
   justify-content: center;
+  margin: 15px 0;
 }
 
 .playlist-hot-nav__tab {
@@ -37,6 +39,10 @@ const emit = defineEmits<{
 
 .playlist-hot-nav__tab:first-child {
   margin-left: 0;
+}
+
+.playlist-hot-nav__tab:hover {
+  color: var(--color-primary);
 }
 
 .playlist-hot-nav__tab--active {

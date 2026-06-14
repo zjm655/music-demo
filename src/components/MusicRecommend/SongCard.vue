@@ -10,7 +10,7 @@ const props = withDefaults(defineProps<Props>(), {
   name: '歌曲名称',
   artist: '歌手名',
   duration: '3:45',
-  coverUrl: '../../../public/favicon.ico',
+  coverUrl: '/favicon.ico',
 })
 </script>
 
@@ -42,7 +42,6 @@ const props = withDefaults(defineProps<Props>(), {
   gap: var(--space-sm, 8px);
   padding: var(--space-md, 12px) var(--space-md, 12px);
   cursor: pointer;
-  border-bottom: 1px solid var(--color-border-soft, #f3f4f6);
   transition: background var(--transition-fast, 0.15s);
 }
 

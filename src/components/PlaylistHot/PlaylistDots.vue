@@ -28,5 +28,7 @@ const emit = defineEmits<{
   justify-content: center;
   align-items: center;
   gap: 10px;
+  margin-top: 30px;
+  margin-bottom: 15px;
 }
 </style>

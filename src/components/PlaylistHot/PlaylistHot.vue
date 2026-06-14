@@ -2,59 +2,19 @@
 import PlaylistCard from './PlaylistCard.vue'
 import PlaylistNav from './PlaylistNav.vue'
 import PlaylistDots from './PlaylistDots.vue'
-import { ref, reactive, computed, onMounted, onBeforeUnmount } from 'vue'
+import { useCarousel } from '@/hooks/useCarousel'
+import { ref, reactive } from 'vue'
 
 const activeTab = ref(0)
-const currentPage = ref(0)
-const containerWidth = ref(0)
 const playlistTab = ['为你推荐', '官方歌单', '情歌', '网络歌曲', '经典', 'KTV热歌']
 const cards = reactive([1, 2, 3, 4, 5])
 const lists = reactive([1, 2, 3, 4, 5])
 
-const listsRef = ref<HTMLElement | null>(null)
-let resizeObserver: ResizeObserver | null = null
-
-const translateX = computed(() => -currentPage.value * containerWidth.value)
-
-const listsStyle = computed(() => ({
-  transform: `translateX(${translateX.value}px)`,
-  transition: 'transform 0.4s ease',
-}))
+const { currentPage, listsRef, listsStyle, prevPage, nextPage, goToPage, onTouchStart, onTouchMove, onTouchEnd } = useCarousel({ totalPages: lists.length })
 
 function switchTab(index: number) {
   activeTab.value = index
 }
-
-function goToPage(index: number) {
-  currentPage.value = index
-}
-
-function prevPage() {
-  currentPage.value = (currentPage.value - 1 + lists.length) % lists.length
-}
-
-function nextPage() {
-  currentPage.value = (currentPage.value + 1) % lists.length
-}
-
-onMounted(() => {
-  if (listsRef.value) {
-    containerWidth.value = listsRef.value.offsetWidth
-    resizeObserver = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        containerWidth.value = entry.contentRect.width
-      }
-    })
-    resizeObserver.observe(listsRef.value)
-  }
-})
-
-onBeforeUnmount(() => {
-  if (resizeObserver) {
-    resizeObserver.disconnect()
-    resizeObserver = null
-  }
-})
 </script>
 
 <template>
@@ -74,7 +34,14 @@ onBeforeUnmount(() => {
       >
         <span class="playlist-hot__arrow playlist-hot__arrow--left"></span>
       </button>
-      <div class="platlist-hot__lists" ref="listsRef" :style="listsStyle">
+      <div
+        class="platlist-hot__lists"
+        ref="listsRef"
+        :style="listsStyle"
+        @touchstart="onTouchStart"
+        @touchmove="onTouchMove"
+        @touchend="onTouchEnd"
+      >
         <div class="playlist-hot__list" v-for="(list, index) in lists" :key="index">
           <div class="playlist-hot__card" v-for="(card, index) in cards" :key="index">
             <playlist-card />
