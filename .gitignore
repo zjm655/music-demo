@@ -49,3 +49,6 @@ skills-lock.json
 .vite/
 
 public/backgound1
+.vscode/
+auto-imports.d.ts
+components.d.ts
