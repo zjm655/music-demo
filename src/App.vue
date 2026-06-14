@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import MusicHeader from '@/components/App/MusicHeader.vue'
-import MusicFooter from '@/components/App/MusicFooter.vue'
 import { useThemeStore } from './stores/theme'
 import { computed } from 'vue'
 const appStyle = computed(() => ({
@@ -16,9 +15,7 @@ const appStyle = computed(() => ({
     <main class="app-main">
       <router-view />
     </main>
-    <footer class="app-footer">
-      <music-footer />
-    </footer>
+    <footer class="app-footer"></footer>
   </div>
 </template>
 

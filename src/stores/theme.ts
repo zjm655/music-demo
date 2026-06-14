@@ -4,6 +4,7 @@ import { ref, computed } from 'vue'
 export const useThemeStore = defineStore('theme', () => {
   // 定义背景图列表
   const backgrounds = ref([
+    '/',
     '/background/image1.png',
     '/background/image2.png',
     '/background/image3.png',

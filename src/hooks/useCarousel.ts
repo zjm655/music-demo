@@ -42,17 +42,34 @@ export function useCarousel(options: CarouselOptions) {
     currentPage.value = index
   }
 
-  // Touch: drag-follow + snap-on-release
+  // function onTouchStart(e: TouchEvent) {
+  //   isDragging.value = true
+  //   touchStartX.value = e.touches[0].clientX
+  //   touchDeltaX.value = 0
+  //   finalDelta = 0
+  // }
   function onTouchStart(e: TouchEvent) {
+    const touch = e.changedTouches[0]
+    if (!touch) return
+
     isDragging.value = true
-    touchStartX.value = e.touches[0].clientX
+    touchStartX.value = touch.clientX
     touchDeltaX.value = 0
     finalDelta = 0
   }
 
+  // function onTouchMove(e: TouchEvent) {
+  //   if (!isDragging.value) return
+  //   finalDelta = e.touches[0].clientX - touchStartX.value
+  //   touchDeltaX.value = finalDelta
+  // }
+
   function onTouchMove(e: TouchEvent) {
     if (!isDragging.value) return
-    finalDelta = e.touches[0].clientX - touchStartX.value
+    const touch = e.changedTouches[0]
+    if (!touch) return
+
+    finalDelta = touch.clientX - touchStartX.value
     touchDeltaX.value = finalDelta
   }
 

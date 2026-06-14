@@ -1,18 +1,13 @@
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref } from 'vue'
 import { useThemeStore } from '@/stores/theme'
 import { Search } from '@element-plus/icons-vue'
 import { Moon, Sunny, ArrowDown } from '@element-plus/icons-vue'
+const activeNames = ref(['0'])
 const bgMode = ref(false)
 function changeBgMode() {
   document.documentElement.classList.toggle('dark')
 }
-
-const backgroundImage = reactive([
-  '/background/image1.png',
-  '/background/image2.png',
-  '/background/image3.png',
-])
 
 const drawer = ref(false)
 </script>
@@ -41,7 +36,7 @@ const drawer = ref(false)
         </el-button>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item v-for="(imageSrc, index) in backgroundImage" :key="index"
+            <el-dropdown-item v-for="(imageSrc, index) in useThemeStore().backgrounds" :key="index"
               ><el-image
                 style="width: 100px; height: 90px"
                 :src="imageSrc"
@@ -95,22 +90,26 @@ const drawer = ref(false)
           :active-action-icon="Moon"
           :inactive-action-icon="Sunny"
         ></el-switch>
-        <el-dropdown>
-          <el-button type="primary" style="background-color: var(--color-primary-active)">
-            切换背景图片<el-icon class="el-icon--right"><arrow-down /></el-icon>
-          </el-button>
-          <template #dropdown>
-            <el-dropdown-menu>
-              <el-dropdown-item v-for="(imageSrc, index) in backgroundImage" :key="index"
-                ><el-image
-                  style="width: 100px; height: 90px"
-                  :src="imageSrc"
-                  @click="useThemeStore().setBg(Number(index))"
-                ></el-image
-              ></el-dropdown-item>
-            </el-dropdown-menu>
-          </template>
-        </el-dropdown>
+
+        <el-collapse
+          v-model="activeNames"
+          @change="1 + 1"
+          style="background-color: var(--color-primary-active)"
+        >
+          <el-collapse-item
+            title="切换背景图片"
+            name="1"
+            style="background-color: var(--color-primary-active)"
+          >
+            <el-image
+              v-for="(imageSrc, index) in useThemeStore().backgrounds"
+              :key="index"
+              style="width: 100px; height: 90px; margin: 0 5px"
+              :src="imageSrc"
+              @click="useThemeStore().setBg(Number(index))"
+            ></el-image>
+          </el-collapse-item>
+        </el-collapse>
       </nav>
     </el-drawer>
   </div>
@@ -298,6 +297,21 @@ const drawer = ref(false)
   justify-content: center;
   flex-direction: column;
   gap: 15px;
+}
+
+:deep(.el-collapse-item__header) {
+  background: var(--gradient-page);
+  color: #fff;
+  border-bottom: none;
+}
+
+:deep(.el-collapse-item__wrap) {
+  background: var(--gradient-page);
+  border-bottom: none;
+}
+
+:deep(.el-collapse-item__title) {
+  color: var(--color-text-primary);
 }
 
 @media (max-width: 900px) {
