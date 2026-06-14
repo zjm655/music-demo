@@ -19,7 +19,7 @@ import MusicFooter from '@/components/App/MusicFooter.vue'
 
 <style scoped>
 .app {
-  background: url(/background/image2.png);
+  background: url(/background/image1.png);
   /* height: 100vh; */
 }
 .app-header {
