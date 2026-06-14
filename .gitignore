@@ -37,3 +37,12 @@ __screenshots__/
 
 # Vite
 *.timestamp-*-*.mjs
+
+.env
+.env.development
+.vite/
+AGENTS.md
+components.d.ts
+skills-lock.json
+
+
