@@ -46,3 +46,14 @@ components.d.ts
 skills-lock.json
 
 
+
+.env
+.env.development
+
+.trae/
+.agent/
+AGENTS.md
+skills-lock.json
+.vite/
+
+public/backgound1

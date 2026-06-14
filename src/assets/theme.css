@@ -1,0 +1,372 @@
+/* ============================================================
+ * 音乐平台主题变量 - 紫色梦幻风格
+ * 参考色系：紫蓝渐变夜空 + 霓虹粉紫 + 暖橙高亮
+ * 使用方式：
+ *   color: var(--color-text-primary);
+ *   background: var(--color-bg-page);
+ *   按钮/卡片：使用对应的 semantic 色
+ * ============================================================ */
+
+:root {
+  /* ============================================================
+   * 品牌色 Brand Colors
+   * ============================================================ */
+  --color-primary: #8b5cf6; /* 主色：明亮紫 */
+  --color-primary-hover: #a78bfa; /* 悬停 */
+  --color-primary-active: #7c3aed; /* 按下 */
+  --color-primary-soft: #ddd6fe; /* 柔和背景（标签、徽章） */
+  --color-primary-bg: #ede9fe; /* 淡紫底（输入框 focus） */
+
+  --color-secondary: #ec4899; /* 辅色：霓虹粉紫（播放按钮高亮） */
+  --color-secondary-hover: #f472b6;
+  --color-secondary-soft: #fce7f3;
+
+  --color-accent: #fcd34d; /* 强调：暖橙黄（太阳/高亮） */
+  --color-accent-soft: #fef3c7;
+
+  /* ============================================================
+   * 语义色 Semantic Colors
+   * ============================================================ */
+  --color-success: #10b981; /* 成功 */
+  --color-success-soft: #d1fae5;
+  --color-warning: #f59e0b; /* 警告 */
+  --color-warning-soft: #fef3c7;
+  --color-danger: #ef4444; /* 危险/错误 */
+  --color-danger-soft: #fee2e2;
+  --color-info: #3b82f6; /* 信息 */
+  --color-info-soft: #dbeafe;
+
+  /* ============================================================
+   * 文字色 Text Colors
+   * ============================================================ */
+  --color-text-primary: #1f2937; /* 主要文字 */
+  --color-text-secondary: #6b7280; /* 次要文字 */
+  --color-text-muted: #9ca3af; /* 提示文字 */
+  --color-text-disabled: #d1d5db; /* 禁用 */
+  --color-text-inverse: #ffffff; /* 反色（深色底上用） */
+
+  /* ============================================================
+   * 背景色 Background Colors
+   * ============================================================ */
+  --color-bg-page: #faf5ff; /* 页面背景：淡紫白 */
+  --color-bg-card: #ffffff; /* 卡片背景 */
+  --color-bg-elevated: #f3e8ff; /* 上浮层级（抽屉、弹窗） */
+  --color-bg-hover: #f3e8ff; /* hover 行背景 */
+  --color-bg-active: #ede9fe; /* 选中/激活行背景 */
+
+  /* ============================================================
+   * 边框/分割线 Border Colors
+   * ============================================================ */
+  --color-border: #e5e7eb; /* 默认边框 */
+  --color-border-soft: #f3f4f6; /* 细分割线 */
+  --color-border-strong: #d1d5db; /* 粗边框 */
+  --color-border-focus: #8b5cf6; /* focus 边框（主色） */
+
+  /* ============================================================
+   * 状态色（输入框、表单） Form States
+   * ============================================================ */
+  --color-input-bg: #ffffff;
+  --color-input-placeholder: #9ca3af;
+
+  /* ============================================================
+   * 阴影 Shadows
+   * ============================================================ */
+  --shadow-sm: 0 1px 2px 0 rgba(139, 92, 246, 0.05);
+  --shadow-md: 0 4px 12px 0 rgba(139, 92, 246, 0.08);
+  --shadow-lg: 0 10px 25px -5px rgba(139, 92, 246, 0.15);
+  --shadow-glow: 0 0 20px rgba(139, 92, 246, 0.35); /* 霓虹紫发光 */
+  --shadow-glow-pink: 0 0 20px rgba(236, 72, 153, 0.4);
+
+  /* ============================================================
+   * 圆角 Radius
+   * ============================================================ */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+
+  /* ============================================================
+   * 字号 Font Sizes
+   * ============================================================ */
+  --font-size-xs: 12px;
+  --font-size-sm: 13px;
+  --font-size-base: 14px;
+  --font-size-md: 15px;
+  --font-size-lg: 18px;
+  --font-size-xl: 22px;
+  --font-size-2xl: 28px;
+
+  /* ============================================================
+   * 间距 Spacing
+   * ============================================================ */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 24px;
+  --space-2xl: 32px;
+
+  /* ============================================================
+   * 行高 Line Height
+   * ============================================================ */
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-loose: 1.8;
+
+  /* ============================================================
+   * 渐变 Gradients（首页/播放器背景用）
+   * ============================================================ */
+  --gradient-page:
+    radial-gradient(ellipse at 20% 0%, rgba(139, 92, 246, 0.18) 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 100%, rgba(236, 72, 153, 0.12) 0%, transparent 55%),
+    linear-gradient(180deg, #faf5ff 0%, #f3e8ff 100%);
+  --gradient-xuhua:
+    radial-gradient(ellipse at 20% 0%, rgba(139, 92, 246, 0.18) 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 100%, rgba(236, 72, 153, 0.12) 0%, transparent 55%),
+    linear-gradient(180deg, rgba(250, 245, 255, 0.6) 0%, rgba(243, 232, 255, 0.6) 100%);
+
+  --gradient-primary: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);
+  --gradient-play: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%); /* 紫→粉 播放按钮 */
+  --gradient-accent: linear-gradient(135deg, #f59e0b 0%, #fcd34d 100%);
+
+  /* ============================================================
+   * 动画时长 Transition
+   * ============================================================ */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.25s ease;
+  --transition-slow: 0.4s ease;
+}
+
+/* ============================================================
+ * 深色模式 Dark Mode
+ * 核心策略：底色反转成深紫蓝，品牌色保持亮度
+ * ============================================================ */
+:root.dark {
+  /* 品牌色保持（紫色在深色下更好看） */
+  --color-primary: #a78bfa;
+  --color-primary-hover: #c4b5fd;
+  --color-primary-active: #8b5cf6;
+  --color-primary-soft: rgba(139, 92, 246, 0.25);
+  --color-primary-bg: rgba(139, 92, 246, 0.15);
+
+  --color-secondary: #f472b6;
+  --color-secondary-hover: #fbcfe8;
+  --color-secondary-soft: rgba(236, 72, 153, 0.2);
+
+  --color-accent: #fcd34d;
+  --color-accent-soft: rgba(252, 211, 77, 0.15);
+
+  /* 语义色：提亮饱和度 */
+  --color-success: #34d399;
+  --color-success-soft: rgba(16, 185, 129, 0.2);
+  --color-warning: #fbbf24;
+  --color-warning-soft: rgba(245, 158, 11, 0.2);
+  --color-danger: #f87171;
+  --color-danger-soft: rgba(239, 68, 68, 0.2);
+  --color-info: #60a5fa;
+  --color-info-soft: rgba(59, 130, 246, 0.2);
+
+  /* 文字色：从白逐级变灰 */
+  --color-text-primary: #f3f4f6;
+  --color-text-secondary: #d1d5db;
+  --color-text-muted: #9ca3af;
+  --color-text-disabled: #4b5563;
+  --color-text-inverse: #111827;
+
+  /* 背景色：深紫蓝夜空感 */
+  --color-bg-page: #0f0a1f; /* 页面底：近黑带紫 */
+  --color-bg-card: #1a1230; /* 卡片：深紫 */
+  --color-bg-elevated: #241a3d; /* 抽屉/弹窗 */
+  --color-bg-hover: rgba(139, 92, 246, 0.12);
+  --color-bg-active: rgba(139, 92, 246, 0.22);
+
+  /* 边框：降低亮度 */
+  --color-border: rgba(139, 92, 246, 0.25);
+  --color-border-soft: rgba(139, 92, 246, 0.12);
+  --color-border-strong: rgba(139, 92, 246, 0.45);
+  --color-border-focus: #a78bfa;
+
+  /* 输入框 */
+  --color-input-bg: #241a3d;
+  --color-input-placeholder: #6b7280;
+
+  /* 阴影：更深的紫色阴影 */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 12px 0 rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.6);
+  --shadow-glow: 0 0 24px rgba(167, 139, 250, 0.5);
+  --shadow-glow-pink: 0 0 24px rgba(244, 114, 182, 0.55);
+
+  /* 渐变：深色下的紫粉发光 */
+  --gradient-page:
+    radial-gradient(ellipse at 20% 0%, rgba(139, 92, 246, 0.35) 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 100%, rgba(236, 72, 153, 0.25) 0%, transparent 55%),
+    linear-gradient(180deg, #0f0a1f 0%, #1a1230 100%);
+
+  --gradient-xuhua:
+    radial-gradient(ellipse at 20% 0%, rgba(139, 92, 246, 0.35) 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 100%, rgba(236, 72, 153, 0.25) 0%, transparent 55%),
+    linear-gradient(180deg, rgba(15, 10, 31, 0.5) 0%, rgba(26, 18, 48, 0.5) 100%);
+
+  --gradient-primary: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);
+  --gradient-play: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+  --gradient-accent: linear-gradient(135deg, #f59e0b 0%, #fcd34d 100%);
+
+  /* 圆角/字号/间距/动画：沿用浅色变量，无需重写 */
+}
+
+/* ============================================================
+ * 辅助工具类（可选使用，方便快速加样式）
+ * 使用：<div class="text-primary bg-card rounded-md"></div>
+ * ============================================================ */
+
+.text-primary {
+  color: var(--color-primary);
+}
+.text-secondary {
+  color: var(--color-text-secondary);
+}
+.text-muted {
+  color: var(--color-text-muted);
+}
+.text-success {
+  color: var(--color-success);
+}
+.text-warning {
+  color: var(--color-warning);
+}
+.text-danger {
+  color: var(--color-danger);
+}
+.text-accent {
+  color: var(--color-accent);
+}
+.text-inverse {
+  color: var(--color-text-inverse);
+}
+
+.bg-page {
+  background-color: var(--color-bg-page);
+}
+.bg-card {
+  background-color: var(--color-bg-card);
+}
+.bg-primary {
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse);
+}
+.bg-primary-soft {
+  background-color: var(--color-primary-soft);
+}
+.bg-hover {
+  background-color: var(--color-bg-hover);
+}
+
+.rounded-sm {
+  border-radius: var(--radius-sm);
+}
+.rounded-md {
+  border-radius: var(--radius-md);
+}
+.rounded-lg {
+  border-radius: var(--radius-lg);
+}
+.rounded-full {
+  border-radius: var(--radius-full);
+}
+
+.shadow-sm {
+  box-shadow: var(--shadow-sm);
+}
+.shadow-md {
+  box-shadow: var(--shadow-md);
+}
+.shadow-lg {
+  box-shadow: var(--shadow-lg);
+}
+.shadow-glow {
+  box-shadow: var(--shadow-glow);
+}
+.shadow-glow-pink {
+  box-shadow: var(--shadow-glow-pink);
+}
+
+.gradient-page {
+  background: var(--gradient-page);
+}
+.gradient-primary {
+  background: var(--gradient-primary);
+  color: var(--color-text-inverse);
+}
+.gradient-play {
+  background: var(--gradient-play);
+  color: var(--color-text-inverse);
+}
+.gradient-accent {
+  background: var(--gradient-accent);
+  color: var(--color-text-inverse);
+}
+
+/* ============================================================
+ * 全局基础样式
+ * ============================================================ */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei', sans-serif;
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-primary);
+  background: var(--gradient-page);
+  background-attachment: fixed; /* 渐变背景不随滚动条移动 */
+  transition:
+    color var(--transition-normal),
+    background-color var(--transition-normal);
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  color: var(--color-primary-hover);
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  outline: none;
+  font-family: inherit;
+}
+
+/* 选中文字颜色：紫色高亮 */
+::selection {
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+}
+
+/* 滚动条：紫色风格 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-bg-elevated);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: var(--radius-full);
+  opacity: 0.5;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary-hover);
+}

@@ -1,18 +1,71 @@
 import { fileURLToPath, URL } from 'node:url'
-
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
+import type { ServerOptions } from 'vite'
+
+// elemment plus自动按需导入所需
+import AutoImport from 'unplugin-auto-import/vite'
+import Components from 'unplugin-vue-components/vite'
+import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
+
+function escapeRegExp(str: string) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
 
 // https://vite.dev/config/
-export default defineConfig({
-  plugins: [
-    vue(),
-    vueDevTools(),
-  ],
-  resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '')
+  const {
+    VITE_BASE_SERVER_PATH,
+    VITE_BASE_PROXY_SERVER_URL,
+    VITE_BASE_PROXY_OSS_URL,
+    VITE_BASE_OSS_PATH,
+    VITE_BASE_H5_PROXY,
+  } = env
+
+  const proxyConf: ServerOptions['proxy'] = {}
+  // 服务器的代理
+  if (VITE_BASE_SERVER_PATH && VITE_BASE_PROXY_SERVER_URL) {
+    proxyConf[VITE_BASE_PROXY_SERVER_URL] = {
+      target: VITE_BASE_SERVER_PATH,
+      changeOrigin: true,
+      secure: false,
+    }
+  }
+  // OSS代理
+  if (VITE_BASE_PROXY_OSS_URL && VITE_BASE_OSS_PATH) {
+    proxyConf[VITE_BASE_PROXY_OSS_URL] = {
+      target: VITE_BASE_OSS_PATH,
+      changeOrigin: true,
+      secure: false,
+      rewrite: (path) => {
+        const prefix = VITE_BASE_PROXY_OSS_URL
+        return path.replace(new RegExp(`^${escapeRegExp(prefix)}`), '')
+      },
+    }
+  }
+
+  return {
+    base: VITE_BASE_H5_PROXY,
+    plugins: [
+      vue(),
+      vueDevTools(),
+      // element plus按需自动导入配置
+      AutoImport({
+        resolvers: [ElementPlusResolver()],
+      }),
+      Components({
+        resolvers: [ElementPlusResolver()],
+      }),
+    ],
+    resolve: {
+      alias: {
+        '@': fileURLToPath(new URL('./src', import.meta.url)),
+      },
     },
-  },
+    server: {
+      proxy: proxyConf,
+    },
+  }
 })
