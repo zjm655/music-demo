@@ -1,2 +1,8 @@
 export const loginPath = '/api/auth/login'
 export const registerPath = '/api/auth/register'
+export const songsPath = '/api/songs'
+export const playlistsPath = '/api/playlists'
+export const actionToSongsPath = '/api/playlists/{id}/songs'
+export const userInfoPath = '/api/user/profile'
+export const userHistoryPath = '/api/user/history'
+export const searchPath = '/api/search'

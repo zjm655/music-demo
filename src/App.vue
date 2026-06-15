@@ -36,7 +36,6 @@ const appStyle = computed(() => ({
   width: clamp(80vw, calc(75vw + 150px), 100vw);
   margin: 0 auto;
   background: var(--gradient-xuhua);
-
   backdrop-filter: blur(8px);
   /* opacity: 0.5; */
 }
