@@ -12,19 +12,19 @@ export interface CommonResCfg<T = Record<string, unknown>> {
   data: T
 }
 
-export interface CommonReqCfg {
+export interface CommonReqCfg<Payload, Res = Record<string, unknown>> {
   tips: MsgTips
   cfg: null | Record<string, unknown>
 
-  handle: <Payload>(payload: Payload) => Promise<CommonResCfg>
+  handle: (payload: Payload) => Promise<CommonResCfg<Res>>
 }
 
-export interface FlatResCfg {
+export interface FlatResCfg<Payload, Res = Record<string, unknown>> {
   success: string
   clientFail: string
   serverFail: string
   error: string
-  handle: <Payload>(payload: Payload) => Promise<CommonResCfg>
+  handle: (payload: Payload) => Promise<CommonResCfg<Res>>
 }
 
 export interface LogCfg {

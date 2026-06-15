@@ -1,5 +1,5 @@
 import { logger } from '@/utils/logger'
-import type { LogCfg } from '@/types/Request'
+import type { LogCfg } from '@/types/requestType'
 
 export const resolveCode = (logCfg: LogCfg) => {
   switch (logCfg.code) {

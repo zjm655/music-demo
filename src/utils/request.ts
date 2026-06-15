@@ -1,4 +1,4 @@
-import axios, { type AxiosRequestConfig, type AxiosResponse, type ResponseType } from 'axios'
+import axios, { type AxiosRequestConfig, type AxiosResponse } from 'axios'
 import type { CommonResCfg } from '@/types/requestType'
 import { logger } from '@/utils/logger'
 import { baseUrl } from '@/config/env'
@@ -69,14 +69,14 @@ http.interceptors.response.use(
   },
 )
 
-function axiosRequest(options: AxiosRequestConfig) {
+function axiosRequest<Res = Record<string, unknown>>(options: AxiosRequestConfig) {
   const controller = new AbortController()
   const config: AxiosRequestConfig = {
     ...options,
     // method: 'GET',
     signal: controller.signal,
   }
-  const promise = http.request(config)
+  const promise = http.request(config) as Promise<CommonResCfg<Res>>
   return {
     promise,
     controller,
@@ -84,29 +84,29 @@ function axiosRequest(options: AxiosRequestConfig) {
 }
 
 const json = {
-  get: (url: string, options: AxiosRequestConfig) => {
-    return axiosRequest({
+  get: <Res = Record<string, unknown>>(url: string, options: AxiosRequestConfig) => {
+    return axiosRequest<Res>({
       ...options,
       url,
       method: 'GET',
     })
   },
-  post: (url: string, options: AxiosRequestConfig) => {
-    return axiosRequest({
+  post: <Res = Record<string, unknown>>(url: string, options: AxiosRequestConfig) => {
+    return axiosRequest<Res>({
       ...options,
       url,
       method: 'POST',
     })
   },
-  put: (url: string, options: AxiosRequestConfig) => {
-    return axiosRequest({
+  put: <Res = Record<string, unknown>>(url: string, options: AxiosRequestConfig) => {
+    return axiosRequest<Res>({
       ...options,
       url,
       method: 'PUT',
     })
   },
-  delete: (url: string, options: AxiosRequestConfig) => {
-    return axiosRequest({
+  delete: <Res = Record<string, unknown>>(url: string, options: AxiosRequestConfig) => {
+    return axiosRequest<Res>({
       ...options,
       url,
       method: 'DELETE',

@@ -1,6 +1,8 @@
 import { login, abort } from '@/api/login'
+import type { Payload } from '@/api/login'
 import { useHandleRes, createResCfg } from '@/hooks/request'
 import { useUserStore } from '@/stores/user'
+import { logger } from '@/utils/logger'
 
 export const useUserLogin = () => {
   const userLoginCfg = createResCfg({
@@ -10,4 +12,30 @@ export const useUserLogin = () => {
     error: '登录失败，请稍后重试',
     handle: login,
   })
+
+  const { execute, isLoading } = useHandleRes(userLoginCfg)
+
+  const userToLogin = async (payload: Payload) => {
+    logger.log('abort', abort)
+    const res = await execute(payload)
+    if (res?.code === 200) {
+      useUserStore().isLogin = true
+      localStorage.setItem('token', res.data?.token)
+      useUserStore().userInfo.userId = res.data?.userId
+      useUserStore().userInfo.username = res.data?.username
+    } else {
+      useUserStore().isLogin = false
+    }
+
+    return {
+      code: res?.code,
+      message: res?.message,
+    }
+  }
+
+  return {
+    userToLogin,
+    isLoading,
+    abort,
+  }
 }

@@ -10,7 +10,9 @@ export function isCommonResCfg<T>(val: unknown): val is CommonResCfg<T> {
   )
 }
 
-export const useHandleRes = <Payload>(resCfg: CommonReqCfg) => {
+export const useHandleRes = <Payload, Res = Record<string, unknown>>(
+  resCfg: CommonReqCfg<Payload, Res>,
+) => {
   const isLoading = ref(false)
   let timer: ReturnType<typeof setTimeout> | null = null
 
@@ -34,9 +36,9 @@ export const useHandleRes = <Payload>(resCfg: CommonReqCfg) => {
         logCfg.message = res?.message
         return res
       } catch (err) {
-        const error: CommonResCfg<Object> = isCommonResCfg<Object>(err)
+        const error: CommonResCfg<Res> = isCommonResCfg<Res>(err)
           ? err
-          : { code: 0, message: String(err), data: {} }
+          : { code: 0, message: String(err), data: {} as Res }
 
         logCfg.code = error?.code
         logCfg.message = error.message
