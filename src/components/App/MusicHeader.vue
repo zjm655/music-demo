@@ -36,9 +36,13 @@ const drawer = ref(false)
         </el-button>
         <template #dropdown>
           <el-dropdown-menu>
+            <el-dropdown-item
+              @click="useThemeStore().setBg(Number(useThemeStore().backgrounds.length + 1))"
+              >使用默认背景</el-dropdown-item
+            >
             <el-dropdown-item v-for="(imageSrc, index) in useThemeStore().backgrounds" :key="index"
               ><el-image
-                style="width: 100px; height: 90px"
+                style="width: 100px; height: 90px; cursor: pointer"
                 :src="imageSrc"
                 @click="useThemeStore().setBg(Number(index))"
               ></el-image
@@ -101,10 +105,16 @@ const drawer = ref(false)
             name="1"
             style="background-color: var(--color-primary-active)"
           >
+            <div
+              @click="useThemeStore().setBg(useThemeStore().backgrounds.length + 1)"
+              class="music-header__bg--change"
+            >
+              使用默认背景
+            </div>
             <el-image
               v-for="(imageSrc, index) in useThemeStore().backgrounds"
               :key="index"
-              style="width: 100px; height: 90px; margin: 0 5px"
+              style="width: 100px; height: 90px; margin: 0 5px; cursor: pointer"
               :src="imageSrc"
               @click="useThemeStore().setBg(Number(index))"
             ></el-image>
@@ -297,6 +307,19 @@ const drawer = ref(false)
   justify-content: center;
   flex-direction: column;
   gap: 15px;
+}
+
+.music-header__bg--change {
+  padding: 10px;
+  box-shadow: var(--color-border);
+  font-size: var(--font-size-base);
+  cursor: pointer;
+  border: var(--color-border) 2px solid;
+  color: var(--color-primary-hover);
+}
+
+.music-header__bg--change:hover {
+  background: rgba(187, 126, 198, 0.322);
 }
 
 :deep(.el-collapse-item__header) {

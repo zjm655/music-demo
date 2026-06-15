@@ -1,4 +1,5 @@
 import axios, { type AxiosRequestConfig, type AxiosResponse, type ResponseType } from 'axios'
+import type { CommonResCfg } from '@/types/requestType'
 import { logger } from '@/utils/logger'
 import { baseUrl } from '@/config/env'
 
@@ -51,7 +52,7 @@ http.interceptors.response.use(
     )
     return response.data
   },
-  (error) => {
+  (error): Promise<CommonResCfg> => {
     if (error.response) {
       logger.warn('响应拦截器 - 收到错误响应:', error.response.status, error.response.data?.message)
       return Promise.reject({
@@ -72,7 +73,7 @@ function axiosRequest(options: AxiosRequestConfig) {
   const controller = new AbortController()
   const config: AxiosRequestConfig = {
     ...options,
-    method: 'GET',
+    // method: 'GET',
     signal: controller.signal,
   }
   const promise = http.request(config)
