@@ -3,7 +3,6 @@ import { resolveCode } from '@/utils/resolveCode'
 import { ref } from 'vue'
 import type { CommonReqCfg, CommonResCfg } from '@/types/requestType'
 
-// declare function isCommonResCfg<T>(val: unknown): val is CommonResCfg<T>
 export function isCommonResCfg<T>(val: unknown): val is CommonResCfg<T> {
   return (
     typeof val === 'object' && val !== null && 'code' in val && 'message' in val && 'data' in val
@@ -50,6 +49,7 @@ export const useHandleRes = <Payload, Res = Record<string, unknown>>(
           clearTimeout(timer)
           timer = null
         }
+        logger.log('resolveCode')
         resolveCode(logCfg)
       }
     },

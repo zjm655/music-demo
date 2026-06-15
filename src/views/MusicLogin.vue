@@ -39,7 +39,11 @@ const registerForm = reactive({
 })
 const { userToRegister, isLoading: registerLoading } = useUserRegister()
 
-const validateConfirmPassword = (_rule: unknown, value: string, callback: (err?: Error) => void) => {
+const validateConfirmPassword = (
+  _rule: unknown,
+  value: string,
+  callback: (err?: Error) => void,
+) => {
   if (value !== registerForm.password) {
     callback(new Error('两次输入的密码不一致'))
   } else {
@@ -105,7 +109,9 @@ const handleRegister = async () => {
     <div class="login-card">
       <div class="login-card__header">
         <h1 class="login-card__title">音乐平台</h1>
-        <p class="login-card__subtitle">{{ activeTab === 'login' ? '欢迎回来' : '创建你的账号' }}</p>
+        <p class="login-card__subtitle">
+          {{ activeTab === 'login' ? '欢迎回来' : '创建你的账号' }}
+        </p>
       </div>
 
       <el-tabs v-model="activeTab" class="login-card__tabs" stretch>
@@ -114,7 +120,8 @@ const handleRegister = async () => {
             ref="loginFormRef"
             :model="loginForm"
             :rules="loginRules"
-            label-position="top"
+            label-position="left"
+            label-width="80px"
             size="large"
           >
             <el-form-item label="用户名" prop="username">
@@ -147,7 +154,8 @@ const handleRegister = async () => {
             ref="registerFormRef"
             :model="registerForm"
             :rules="registerRules"
-            label-position="top"
+            label-position="left"
+            label-width="80px"
             size="large"
           >
             <el-form-item label="用户名" prop="username">
@@ -170,7 +178,10 @@ const handleRegister = async () => {
                     :key="i"
                     class="password-strength__bar"
                     :class="{ 'password-strength__bar--active': passwordStrength.level >= i }"
-                    :style="{ backgroundColor: passwordStrength.level >= i ? passwordStrength.color : undefined }"
+                    :style="{
+                      backgroundColor:
+                        passwordStrength.level >= i ? passwordStrength.color : undefined,
+                    }"
                   />
                 </div>
                 <span class="password-strength__text" :style="{ color: passwordStrength.color }">
@@ -215,8 +226,11 @@ const handleRegister = async () => {
 
 .login-card {
   width: 100%;
-  max-width: 420px;
-  background: var(--color-bg-card);
+  max-width: 520px;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
   padding: var(--space-2xl);
@@ -241,8 +255,8 @@ const handleRegister = async () => {
   --el-border-color-light: var(--color-border-soft);
   --el-border-color-hover: var(--color-border-strong);
 
-  --el-fill-color-blank: var(--color-input-bg);
-  --el-bg-color: var(--color-bg-card);
+  --el-fill-color-blank: rgba(255, 255, 255, 0.5);
+  --el-bg-color: transparent;
 }
 
 .login-card__header {
@@ -332,5 +346,12 @@ const handleRegister = async () => {
 
 .login-card__tabs :deep(.el-input__wrapper.is-focus) {
   box-shadow: 0 0 0 1px var(--color-border-focus) inset;
+}
+
+/* 深色模式适配 */
+:root.dark .login-card {
+  background: rgba(26, 18, 48, 0.6);
+  border-color: rgba(139, 92, 246, 0.2);
+  --el-fill-color-blank: rgba(36, 26, 61, 0.5);
 }
 </style>
