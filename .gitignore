@@ -38,15 +38,19 @@ __screenshots__/
 # Vite
 *.timestamp-*-*.mjs
 
+
 .env
 .env.development
-.vite/
-AGENTS.md
-components.d.ts
-skills-lock.json
+
 .trae/
 .agent/
+AGENTS.md
+skills-lock.json
+.vite/
+
 public/backgound1
 .vscode/
 auto-imports.d.ts
 components.d.ts
+nodejs/
+mock-server/

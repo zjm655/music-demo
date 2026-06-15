@@ -4,4 +4,9 @@ export const homeRouter = [
     name: 'MyHome',
     component: () => import('@/views/MusicHome.vue'),
   },
+  {
+    path: '/login',
+    name: 'login',
+    component: () => import('@/views/MusicLogin.vue'),
+  },
 ]
