@@ -20,6 +20,12 @@ const appStyle = computed(() => ({
 </template>
 
 <style scoped>
+.app {
+  /* width: 100vw; */
+  background-size: 100vw auto;
+  min-height: 100vh;
+  background-attachment: fixed;
+}
 .app-header {
   margin: 0 auto;
   background: var(--gradient-page);

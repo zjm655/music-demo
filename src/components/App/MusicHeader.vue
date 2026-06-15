@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { useThemeStore } from '@/stores/theme'
 import { Search } from '@element-plus/icons-vue'
 import { Moon, Sunny, ArrowDown } from '@element-plus/icons-vue'
+import { useUserStore } from '@/stores/user'
 const activeNames = ref(['0'])
 const bgMode = ref(false)
 function changeBgMode() {
@@ -17,9 +18,11 @@ const drawer = ref(false)
     <h1 class="music-header__brand">音乐平台</h1>
     <nav class="music-header__nav">
       <router-link to="/home" active-class="music-header__link--active">首页</router-link>
-      <router-link to="/">音乐排行</router-link>
-      <router-link to="/">推荐歌单</router-link>
-      <router-link to="/">我的歌单</router-link>
+      <router-link to="/" active-class="music-header__link--active">音乐排行</router-link>
+      <router-link to="/" active-class="music-header__link--active">推荐歌单</router-link>
+      <router-link to="/" active-class="music-header__link--active" v-if="useUserStore().isLogin"
+        >我的歌单</router-link
+      >
     </nav>
     <div class="music-header__search">
       <input type="text" class="music-header__input" placeholder="搜索歌曲、歌手" />
@@ -28,8 +31,10 @@ const drawer = ref(false)
       </button>
     </div>
     <nav class="music-header__user">
-      <router-link to="/">个人中心</router-link>
-      <router-link to="/">登录</router-link>
+      <router-link to="/" active-class="music-header__link--active" v-if="useUserStore().isLogin"
+        >个人中心</router-link
+      >
+      <router-link to="/login" active-class="music-header__link--active" v-else>登录</router-link>
       <el-dropdown>
         <el-button type="primary" style="background-color: var(--color-primary-active)">
           切换背景图片<el-icon class="el-icon--right"><arrow-down /></el-icon>
@@ -82,11 +87,18 @@ const drawer = ref(false)
     >
       <nav class="music-header__nav--mobilphone">
         <router-link to="/home" active-class="music-header__link--active">首页</router-link>
-        <router-link to="/">登录</router-link>
-        <router-link to="/">音乐排行</router-link>
-        <router-link to="/">推荐歌单</router-link>
-        <router-link to="/">我的歌单</router-link>
-        <router-link to="/">个人中心</router-link>
+        <router-link
+          to="/login"
+          active-class="music-header__link--active"
+          v-if="!useUserStore().isLogin"
+          >登录</router-link
+        >
+        <router-link to="/" active-class="music-header__link--active" v-else>个人中心</router-link>
+        <router-link to="/" active-class="music-header__link--active">音乐排行</router-link>
+        <router-link to="/" active-class="music-header__link--active">推荐歌单</router-link>
+        <router-link to="/" active-class="music-header__link--active" v-if="useUserStore().isLogin"
+          >我的歌单</router-link
+        >
         <el-switch
           v-model="bgMode"
           style="--el-switch-on-color: var(--color-primary-active)"
