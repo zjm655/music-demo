@@ -35,15 +35,20 @@ const appStyle = computed(() => ({
   border-bottom: 1.5px solid var(--color-border-soft);
   transition: background var(--transition-normal);
 }
-.app-main {
+/* .app-main {
   width: clamp(80vw, calc(75vw + 150px), 100vw);
   margin: 0 auto;
   background: var(--gradient-xuhua);
   backdrop-filter: blur(8px);
-  /* opacity: 0.5; */
-}
+} */
 .app-footer {
   width: 100%;
-  height: clamp(240px, calc(300px + 10vh), 500px);
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 1000;
+  background: inherit;
 }
 </style>
