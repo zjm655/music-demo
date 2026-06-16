@@ -14,13 +14,14 @@ router.beforeEach((to, from) => {
   const token = localStorage.getItem('token')
   if (!token && to.meta.requireAuth) {
     return '/login'
-  } else if (to.path === '/login' && token) {
-    return '/home'
   }
+  // else if (to.path === '/login' && token) {
+  //   return '/home'
+  // }
 
-  if ((to.path === '/login' || to.path === '/register') && token) {
-    return '/home'
-  }
+  // if ((to.path === '/login' || to.path === '/register') && token) {
+  //   return '/home'
+  // }
 
   return true
 })
