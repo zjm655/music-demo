@@ -31,7 +31,10 @@ const drawer = ref(false)
       </button>
     </div>
     <nav class="music-header__user">
-      <router-link to="/" active-class="music-header__link--active" v-if="useUserStore().isLogin"
+      <router-link
+        to="/user-center"
+        active-class="music-header__link--active"
+        v-if="useUserStore().isLogin"
         >个人中心</router-link
       >
       <router-link to="/login" active-class="music-header__link--active" v-else>登录</router-link>
@@ -93,7 +96,9 @@ const drawer = ref(false)
           v-if="!useUserStore().isLogin"
           >登录</router-link
         >
-        <router-link to="/" active-class="music-header__link--active" v-else>个人中心</router-link>
+        <router-link to="/user-center" active-class="music-header__link--active" v-else
+          >个人中心</router-link
+        >
         <router-link to="/" active-class="music-header__link--active">音乐排行</router-link>
         <router-link to="/" active-class="music-header__link--active">推荐歌单</router-link>
         <router-link to="/" active-class="music-header__link--active" v-if="useUserStore().isLogin"

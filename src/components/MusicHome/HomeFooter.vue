@@ -1,7 +1,11 @@
 <script setup lang="ts"></script>
 
 <template>
-  <h1></h1>
+  <div class="home-footer"></div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.home-footer {
+  height: 10vh;
+}
+</style>

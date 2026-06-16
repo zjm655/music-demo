@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import MusicHeader from '@/components/App/MusicHeader.vue'
+import AudioPlayer from './components/MediaPlayer/AudioPlayer.vue'
 import { useThemeStore } from './stores/theme'
 import { computed } from 'vue'
 const appStyle = computed(() => ({
@@ -15,7 +16,9 @@ const appStyle = computed(() => ({
     <main class="app-main">
       <router-view />
     </main>
-    <footer class="app-footer"></footer>
+    <footer class="app-footer">
+      <audio-player />
+    </footer>
   </div>
 </template>
 
@@ -32,16 +35,20 @@ const appStyle = computed(() => ({
   border-bottom: 1.5px solid var(--color-border-soft);
   transition: background var(--transition-normal);
 }
-.app-main {
+/* .app-main {
   width: clamp(80vw, calc(75vw + 150px), 100vw);
   margin: 0 auto;
   background: var(--gradient-xuhua);
-
   backdrop-filter: blur(8px);
-  /* opacity: 0.5; */
-}
+} */
 .app-footer {
   width: 100%;
-  height: clamp(240px, calc(300px + 10vh), 500px);
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 1000;
+  background: inherit;
 }
 </style>

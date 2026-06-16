@@ -21,8 +21,7 @@ export const useUserRegister = () => {
     if (res?.code === 200) {
       useUserStore().isLogin = true
       localStorage.setItem('token', res.data?.token)
-      useUserStore().userInfo.userId = res.data?.userId
-      useUserStore().userInfo.username = res.data?.username
+      useUserStore().loadUserInfo(res.data)
     } else {
       useUserStore().isLogin = false
     }
