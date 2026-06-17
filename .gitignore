@@ -54,3 +54,4 @@ auto-imports.d.ts
 components.d.ts
 nodejs/
 mock-server/
+public/video/
