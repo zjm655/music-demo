@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import SongCard from './SongCard.vue'
-import { useGetSongs } from '@/hooks/songs'
+// import { useGetSongs } from '@/hooks/songs'
 
 interface Song {
   name: string

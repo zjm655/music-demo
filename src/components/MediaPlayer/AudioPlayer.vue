@@ -55,7 +55,7 @@ const audioStore = useAudioStore()
     <!-- 时间 -->
     <span class="player__time"
       >{{ Math.floor(audioStore.currentTime / 60) }}:{{
-        String(audioStore.currentTime % 60).padStart(2, '0')
+        String(Math.floor(audioStore.currentTime % 60)).padStart(2, '0')
       }}</span
     >
 

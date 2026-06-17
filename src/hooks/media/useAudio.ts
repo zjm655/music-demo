@@ -43,6 +43,7 @@ export function useAudio() {
 
     sound = new Howl({
       src: [src],
+      html5: true,
       onplay: () => {
         store.isPlaying = true
         startProgressUpdate()
