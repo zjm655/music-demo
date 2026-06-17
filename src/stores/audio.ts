@@ -17,7 +17,7 @@ export const useAudioStore = defineStore('audio', () => {
   const isMuted = ref(false)
 
   // 播放列表面板
-  const showPlaylist = ref(false)
+  const showPlaylist = ref(true)
 
   function reset() {
     isPlaying.value = false

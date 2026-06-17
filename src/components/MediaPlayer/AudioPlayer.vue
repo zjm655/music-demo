@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { useAudioStore } from '@/stores/media'
-// import { useAudio } from '@/hooks/media'
+import { useAudioStore } from '@/stores/audio'
 import {
   CaretRight,
   VideoPause,
@@ -13,20 +12,18 @@ import {
 } from '@element-plus/icons-vue'
 
 const audioStore = useAudioStore()
-
-/* ── 静态版 Mock 数据（后续接入真实数据时移除） ── */
-audioStore.title = '晴天'
-audioStore.artist = '周杰伦'
-audioStore.coverUrl = ''
-audioStore.currentTime = 82
-audioStore.duration = 269
 </script>
 
 <template>
   <div class="audio-player">
     <!-- 封面 -->
     <div class="player__art">
-      <img v-if="audioStore.coverUrl" :src="audioStore.coverUrl" :alt="audioStore.title" class="player__art-img" />
+      <img
+        v-if="audioStore.coverUrl"
+        :src="audioStore.coverUrl"
+        :alt="audioStore.title"
+        class="player__art-img"
+      />
       <div v-else class="player__art-placeholder">
         <el-icon :size="20"><MagicStick /></el-icon>
       </div>
@@ -56,7 +53,11 @@ audioStore.duration = 269
     </div>
 
     <!-- 时间 -->
-    <span class="player__time">{{ Math.floor(audioStore.currentTime / 60) }}:{{ String(audioStore.currentTime % 60).padStart(2, '0') }}</span>
+    <span class="player__time"
+      >{{ Math.floor(audioStore.currentTime / 60) }}:{{
+        String(audioStore.currentTime % 60).padStart(2, '0')
+      }}</span
+    >
 
     <!-- 进度条 -->
     <input
@@ -74,7 +75,11 @@ audioStore.duration = 269
     />
 
     <!-- 时间 -->
-    <span class="player__time">{{ Math.floor(audioStore.duration / 60) }}:{{ String(audioStore.duration % 60).padStart(2, '0') }}</span>
+    <span class="player__time"
+      >{{ Math.floor(audioStore.duration / 60) }}:{{
+        String(audioStore.duration % 60).padStart(2, '0')
+      }}</span
+    >
 
     <!-- 音量 -->
     <div class="player__volume">
@@ -162,6 +167,7 @@ audioStore.duration = 269
   overflow: hidden;
   text-overflow: ellipsis;
   line-height: 1.3;
+  cursor: pointer;
 }
 
 .player__artist {
@@ -171,6 +177,7 @@ audioStore.duration = 269
   overflow: hidden;
   text-overflow: ellipsis;
   line-height: 1.3;
+  cursor: pointer;
 }
 
 /* ============================================================

@@ -1,5 +1,5 @@
 import { Howl } from 'howler'
-import { useAudioStore } from '@/stores/media/index'
+import { useAudioStore } from '@/stores/audio'
 
 // Howl是外部库实例，不方便进行响应式，因此不放到store里面，而是放在这里进行隔离
 let sound: Howl | null = null

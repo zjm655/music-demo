@@ -10,6 +10,9 @@ export const homeRouter = [
     path: '/login',
     name: 'MusicLogin',
     component: () => import('@/views/MusicLogin.vue'),
+    meta: {
+      hideAudio: true,
+    },
   },
   {
     path: '/user-center',
