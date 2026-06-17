@@ -1,40 +1,49 @@
 <script setup lang="ts">
 import SongCard from './SongCard.vue'
 // import { useGetSongs } from '@/hooks/songs'
+import type { SongsResPayload } from '@/hooks/songs'
+// import { useGetSong } from '@/hooks/songs'
+import { useAudio } from '@/hooks/media'
 
-interface Song {
-  name: string
-  artist: string
-  duration: string
-  coverUrl: string
+// interface Props {
+//   songs?: Song[]
+// }
+
+// 如果需要默认值，必须搭配 withDefaults
+const props = withDefaults(
+  defineProps<{
+    songs: SongsResPayload['list']
+    pageIndex: number | string
+    size: number | string
+  }>(),
+  {
+    size: 9,
+    pageIndex: 1,
+  },
+)
+
+async function openAudio(id: number) {
+  // const request = useGetSong()
+  // const res = await request.userGetSong({ id })
+  useAudio().setPlatlist(props.songs, Number(id))
+  useAudio().load()
+  useAudio().play()
 }
-
-interface Props {
-  songs?: Song[]
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  songs: () => [
-    { name: '晴天', artist: '周杰伦', duration: '4:29', coverUrl: '/favicon.ico' },
-    { name: '起风了', artist: '买辣椒也用券', duration: '5:12', coverUrl: '/favicon.ico' },
-    { name: '孤勇者', artist: '陈奕迅', duration: '4:16', coverUrl: '/favicon.ico' },
-    { name: '稻香', artist: '周杰伦', duration: '3:43', coverUrl: '/favicon.ico' },
-    { name: '光年之外', artist: '邓紫棋', duration: '3:55', coverUrl: '/favicon.ico' },
-    { name: '漠河舞厅', artist: '柳爽', duration: '4:44', coverUrl: '/favicon.ico' },
-    { name: '错位时空', artist: '艾辰', duration: '3:38', coverUrl: '/favicon.ico' },
-    { name: '平凡之路', artist: '朴树', duration: '4:46', coverUrl: '/favicon.ico' },
-    { name: '夜曲', artist: '周杰伦', duration: '3:46', coverUrl: '/favicon.ico' },
-  ],
-})
 </script>
 
 <template>
   <div class="music-recommend-card">
     <div class="card-header">
-      <button class="play-all-btn">▶ 播放全部</button>
+      <!-- <button class="play-all-btn">▶ 播放全部</button> -->
     </div>
+    <!-- 小卡片 -->
     <div class="song-grid">
-      <SongCard v-for="(song, index) in props.songs" :key="index" v-bind="song" />
+      <SongCard
+        v-for="(song, index) in props.songs"
+        :key="song.id"
+        v-bind="song"
+        @click="openAudio(index)"
+      />
     </div>
   </div>
 </template>

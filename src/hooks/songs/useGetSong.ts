@@ -2,6 +2,9 @@ import { getSong, abort } from '@/api/getSong'
 import type { Payload } from '@/api/getSong'
 import { useHandleRes, createResCfg } from '@/hooks/request'
 import { logger } from '@/utils/logger'
+
+export type { Payload, ResPayload } from '@/api/getSong'
+
 export const useGetSong = () => {
   const getSongCfg = createResCfg({
     success: '获取歌曲详情成功',

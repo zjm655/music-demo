@@ -3,33 +3,68 @@ import MusicRecommendCard from './MusicRecommendCard.vue'
 import PlaylistNav from '@/components/PlaylistHot/PlaylistNav.vue'
 import PlaylistDots from '@/components/PlaylistHot/PlaylistDots.vue'
 import { useCarousel } from '@/hooks/useCarousel'
-import { ref, reactive } from 'vue'
+import { ref, computed } from 'vue'
+import { paginate } from '@/utils/paginate'
+import { useGetSongs, type SongsPayload, type SongsResPayload } from '@/hooks/songs'
 
 const activeTab = ref(0)
 const musicTab = ['最新', '内地', '港台', '欧美', '韩国', '日本']
-const pages = reactive([1, 2, 3, 4, 5, 6])
+// const pages = reactive([1, 2, 3, 4, 5, 6])
+const playlist = ref<SongsResPayload>({
+  list: [],
+  total: 1,
+  page: 1,
+  pageSize: 1,
+})
 
-const { currentPage, listsRef, listsStyle, prevPage, nextPage, goToPage, onTouchStart, onTouchMove, onTouchEnd } = useCarousel({ totalPages: pages.length })
+const pages = computed(() => {
+  return paginate(playlist.value.list, 9)
+})
+const {
+  currentPage,
+  listsRef,
+  listsStyle,
+  prevPage,
+  nextPage,
+  goToPage,
+  onTouchStart,
+  onTouchMove,
+  onTouchEnd,
+} = useCarousel({ totalPages: computed(() => pages.value.length) })
 
 function switchTab(index: number) {
   activeTab.value = index
 }
+
+async function getSongs(payload: SongsPayload) {
+  const request = useGetSongs()
+  const res = await request.userGetSongs(payload)
+  if (res?.code === 200 && res?.data != undefined) {
+    playlist.value = res?.data
+  }
+}
+
+getSongs({
+  page: 1,
+  pageSize: 54,
+  type: 'song',
+})
 </script>
 
 <template>
   <div class="music-recommend">
+    <!-- 标题 -->
     <div class="music-recommend__title">
       <h2 class="music-recommend__h2--title">歌曲推荐</h2>
     </div>
-    <playlist-nav
-      :tabs="musicTab"
-      :active-tab="activeTab"
-      @tab-change="switchTab"
-    />
+    <!-- 导航 -->
+    <playlist-nav :tabs="musicTab" :active-tab="activeTab" @tab-change="switchTab" />
+    <!-- 左边的翻页器 -->
     <div class="music-recommend__carousel">
       <button class="music-recommend__pager music-recommend__pager--prev" @click="prevPage">
         <span class="music-recommend__arrow music-recommend__arrow--left"></span>
       </button>
+      <!-- 歌曲列表 -->
       <div
         class="music-recommend__lists"
         ref="listsRef"
@@ -38,19 +73,16 @@ function switchTab(index: number) {
         @touchmove="onTouchMove"
         @touchend="onTouchEnd"
       >
+        <!-- 外部的大卡片，一个大卡片9个小卡片，3 X 3布局 -->
         <div class="music-recommend__page" v-for="(page, index) in pages" :key="index">
-          <music-recommend-card />
+          <music-recommend-card :page-index="playlist.page" :size="9" :songs="page" />
         </div>
       </div>
       <button class="music-recommend__pager music-recommend__pager--next" @click="nextPage">
         <span class="music-recommend__arrow music-recommend__arrow--right"></span>
       </button>
     </div>
-    <playlist-dots
-      :total="pages.length"
-      :active-index="currentPage"
-      @dot-click="goToPage"
-    />
+    <playlist-dots :total="pages.length" :active-index="currentPage" @dot-click="goToPage" />
   </div>
 </template>
 

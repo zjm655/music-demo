@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useAudioStore } from '@/stores/audio'
+import { useAudio } from '@/hooks/media'
 import {
   CaretRight,
   VideoPause,
@@ -12,6 +13,19 @@ import {
 } from '@element-plus/icons-vue'
 
 const audioStore = useAudioStore()
+const audio = useAudio()
+
+// 拖动进度条
+const handleSeek = (e: Event) => {
+  const val = (e.target as HTMLInputElement).valueAsNumber
+  audio.seek(val)
+}
+
+// 拖动音量条
+const handleVolume = (e: Event) => {
+  const val = (e.target as HTMLInputElement).valueAsNumber
+  audio.setVolume(val)
+}
 </script>
 
 <template>
@@ -40,19 +54,23 @@ const audioStore = useAudioStore()
       <button class="player__btn" title="单曲循环">
         <el-icon><Switch /></el-icon>
       </button>
-      <button class="player__btn" title="上一首">
+      <button class="player__btn" title="上一首" @click="audio.prevSong()">
         <el-icon><ArrowLeftBold /></el-icon>
       </button>
-      <button class="player__btn player__btn--play" :title="audioStore.isPlaying ? '暂停' : '播放'">
+      <button
+        class="player__btn player__btn--play"
+        :title="audioStore.isPlaying ? '暂停' : '播放'"
+        @click="audio.toggle()"
+      >
         <el-icon v-if="audioStore.isPlaying"><VideoPause /></el-icon>
         <el-icon v-else><CaretRight /></el-icon>
       </button>
-      <button class="player__btn" title="下一首">
+      <button class="player__btn" title="下一首" @click="audio.nextSong()">
         <el-icon><ArrowRightBold /></el-icon>
       </button>
     </div>
 
-    <!-- 时间 -->
+    <!-- 当前时间 -->
     <span class="player__time"
       >{{ Math.floor(audioStore.currentTime / 60) }}:{{
         String(Math.floor(audioStore.currentTime % 60)).padStart(2, '0')
@@ -67,6 +85,7 @@ const audioStore = useAudioStore()
       :max="audioStore.duration || 0"
       :value="audioStore.currentTime"
       step="0.1"
+      @input="handleSeek"
       :style="{
         '--range-percent': audioStore.duration
           ? (audioStore.currentTime / audioStore.duration) * 100 + '%'
@@ -75,15 +94,16 @@ const audioStore = useAudioStore()
     />
 
     <!-- 时间 -->
-    <span class="player__time"
-      >{{ Math.floor(audioStore.duration / 60) }}:{{
-        String(audioStore.duration % 60).padStart(2, '0')
+    <!-- 总时长 -->
+    <span class="player__time">
+      {{ Math.floor(audioStore.duration / 60) }}:{{
+        String(Math.floor(audioStore.duration % 60)).padStart(2, '0')
       }}</span
     >
 
     <!-- 音量 -->
     <div class="player__volume">
-      <button class="player__btn" title="音量">
+      <button class="player__btn" title="音量" @click="audio.toggleMute()">
         <el-icon><Headset /></el-icon>
       </button>
       <input
@@ -93,6 +113,7 @@ const audioStore = useAudioStore()
         max="1"
         step="0.01"
         :value="audioStore.isMuted ? 0 : audioStore.volume"
+        @input="handleVolume"
         :style="{ '--range-percent': (audioStore.isMuted ? 0 : audioStore.volume * 100) + '%' }"
       />
     </div>
@@ -105,9 +126,7 @@ const audioStore = useAudioStore()
 </template>
 
 <style scoped>
-/* ============================================================
- * 播放器容器 — 透明单行
- * ============================================================ */
+/* * 播放器容器 — 透明单行 */
 .audio-player {
   width: 100%;
   height: 64px;
@@ -120,9 +139,7 @@ const audioStore = useAudioStore()
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* ============================================================
- * 封面（小圆形）
- * ============================================================ */
+/* * 封面（小圆形） */
 .player__art {
   flex-shrink: 0;
   width: 44px;
@@ -147,9 +164,7 @@ const audioStore = useAudioStore()
   color: var(--color-text-muted);
 }
 
-/* ============================================================
- * 歌曲信息
- * ============================================================ */
+/* * 歌曲信息 */
 .player__info {
   flex-shrink: 0;
   min-width: 0;
@@ -180,9 +195,7 @@ const audioStore = useAudioStore()
   cursor: pointer;
 }
 
-/* ============================================================
- * 播放控制
- * ============================================================ */
+/* * 播放控制 */
 .player__controls {
   display: flex;
   align-items: center;
@@ -223,9 +236,7 @@ const audioStore = useAudioStore()
   background: rgba(255, 255, 255, 0.15);
 }
 
-/* ============================================================
- * 时间
- * ============================================================ */
+/* * 时间 */
 .player__time {
   font-size: var(--font-size-xs);
   color: rgba(255, 255, 255, 0.7);
@@ -234,9 +245,7 @@ const audioStore = useAudioStore()
   user-select: none;
 }
 
-/* ============================================================
- * 进度条 / 音量条（range input）
- * ============================================================ */
+/* * 进度条 / 音量条（range input） */
 .player__range {
   -webkit-appearance: none;
   appearance: none;
@@ -304,9 +313,7 @@ const audioStore = useAudioStore()
   min-width: 0;
 }
 
-/* ============================================================
- * 音量
- * ============================================================ */
+/* * 音量 */
 .player__volume {
   display: flex;
   align-items: center;
@@ -314,9 +321,7 @@ const audioStore = useAudioStore()
   flex-shrink: 0;
 }
 
-/* ============================================================
- * 响应式
- * ============================================================ */
+/* * 响应式 */
 @media (max-width: 900px) {
   .audio-player {
     gap: var(--space-sm);

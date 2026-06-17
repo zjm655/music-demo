@@ -4,18 +4,37 @@ import type { CommonResCfg } from '@/types/requestType'
 export let abort: null | AbortController = null
 
 export interface Payload {
-  id: number
+  id: string
 }
 
+// export interface ResPayload {
+//   id: number
+//   title: string
+//   artist: string
+//   album: string
+//   duration: number
+//   coverUrl: string
+//   audioUrl: string
+//   lyrics: string
+// }
+
 export interface ResPayload {
-  id: number
+  id: string
   title: string
-  artist: string
-  album: string
-  duration: number
-  coverUrl: string
-  audioUrl: string
-  lyrics: string
+  artist: string | null
+  album: string | null
+  duration: number | null
+  lyricist: string | null
+  composer: string | null
+  lyrics: string | null
+  audioUrl: string | null
+  mvUrl: string | null
+  mvDescription: string | null
+  mvAuthor: string | null
+  category: string | null
+  coverUrl: string | null
+  createTime: string
+  categoryId: number | null
 }
 
 export function getSong(payload: Payload): Promise<CommonResCfg<ResPayload>> {

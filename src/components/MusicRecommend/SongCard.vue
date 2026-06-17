@@ -1,22 +1,35 @@
 <script setup lang="ts">
 interface Props {
-  name?: string
-  artist?: string
-  duration?: string
-  coverUrl?: string
+  id: string
+  title: string
+  artist: string | null
+  album: string | null
+  duration: number | null
+  lyricist: string | null
+  composer: string | null
+  lyrics: string | null
+  audioUrl: string | null
+  mvUrl: string | null
+  mvDescription: string | null
+  mvAuthor: string | null
+  category: string | null
+  coverUrl: string | null
+  createTime: string
+  categoryId: number | null
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  name: '歌曲名称',
-  artist: '歌手名',
-  duration: '3:45',
+  title: '歌曲名称',
+  lyricist: '未知作词',
+  composer: '未知作曲',
   coverUrl: '/favicon.ico',
+  audioUrl: '',
+  category: '未分类',
 })
 </script>
 
 <template>
   <div class="song-card">
-    <!-- Left: cover thumbnail with hover overlay -->
     <div class="song-cover-wrapper">
       <el-image class="song-cover" :src="props.coverUrl" fit="cover" />
       <div class="song-cover-overlay">
@@ -24,14 +37,16 @@ const props = withDefaults(defineProps<Props>(), {
       </div>
     </div>
 
-    <!-- Middle: song info -->
     <div class="song-info">
-      <span class="song-name" :title="props.name">{{ props.name }}</span>
-      <span class="song-artist" :title="props.artist">{{ props.artist }}</span>
+      <span class="song-name" :title="props.title || '未知'">{{ props.title }}</span>
+      <span
+        class="song-artist"
+        :title="props.artist || props.lyricist || props.composer || props.mvAuthor || '未知'"
+        >{{ props.artist || props.lyricist || props.composer || props.mvAuthor }}</span
+      >
     </div>
 
-    <!-- Right: duration -->
-    <span class="song-duration">{{ props.duration }}</span>
+    <span class="song-duration">{{}}</span>
   </div>
 </template>
 
@@ -49,7 +64,6 @@ const props = withDefaults(defineProps<Props>(), {
   background: var(--color-bg-hover, #f3e8ff);
 }
 
-/* Cover thumbnail wrapper */
 .song-cover-wrapper {
   position: relative;
   flex-shrink: 0;
@@ -64,7 +78,6 @@ const props = withDefaults(defineProps<Props>(), {
   height: 100%;
 }
 
-/* Hover overlay on cover */
 .song-cover-overlay {
   position: absolute;
   inset: 0;
@@ -81,7 +94,6 @@ const props = withDefaults(defineProps<Props>(), {
   opacity: 1;
 }
 
-/* Play icon: white circle with black triangle */
 .song-play-icon {
   display: flex;
   align-items: center;
@@ -103,10 +115,9 @@ const props = withDefaults(defineProps<Props>(), {
   margin-left: 2px;
 }
 
-/* Middle info area */
 .song-info {
   flex: 1;
-  min-width: 0; /* allow flex child to shrink for ellipsis */
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: var(--space-xs, 4px);
@@ -135,7 +146,6 @@ const props = withDefaults(defineProps<Props>(), {
   line-height: 1.4;
 }
 
-/* Right duration */
 .song-duration {
   flex-shrink: 0;
   font-size: var(--font-size-xs, 12px);

@@ -1,5 +1,7 @@
 import { Howl } from 'howler'
-import { useAudioStore } from '@/stores/audio'
+import { useAudioStore, type Song } from '@/stores/audio'
+import { logger } from '@/utils/logger'
+import { ref } from 'vue'
 
 // Howl是外部库实例，不方便进行响应式，因此不放到store里面，而是放在这里进行隔离
 let sound: Howl | null = null
@@ -31,19 +33,32 @@ export function useAudio() {
   }
 
   // 加载音频
-  const load = (src: string) => {
+  const load = () => {
     if (sound) {
       sound.unload()
       stopProgressUpdate()
     }
+    const song = store.currentSong
+    // 更新歌曲信息
+    if (song) {
+      store.title = song.title || ''
+      store.artist = song.artist || ''
+      store.coverUrl = song.coverUrl || ''
+      store.currentTime = 0
+      store.duration = 0
+    }
 
-    store.currentSrc = src
-    store.currentTime = 0
-    store.duration = 0
+    // 更新播放状态
+
+    if (!store.currentSrc) {
+      logger.warn('音频资源加载失败！')
+      return
+    }
 
     sound = new Howl({
-      src: [src],
+      src: [String(store.currentSrc)],
       html5: true,
+      volume: store.isMuted ? 0 : store.volume,
       onplay: () => {
         store.isPlaying = true
         startProgressUpdate()
@@ -52,6 +67,10 @@ export function useAudio() {
         store.isPlaying = false
         store.currentTime = store.duration
         stopProgressUpdate()
+        // 自动播放下一首（播放列表只有一首时不切）
+        if (store.playlist.length > 1) {
+          nextSong()
+        }
       },
       onstop: () => {
         store.isPlaying = false
@@ -71,12 +90,49 @@ export function useAudio() {
     })
   }
 
+  const setPlatlist = (playlist: Song[], index: number) => {
+    store.playlist = playlist
+    store.index = index
+  }
+
   // 播放
   const play = () => {
     if (sound) {
       sound.play()
       store.isPlaying = true
     }
+  }
+
+  const retry = ref(0)
+  // 下一首
+  const nextSong = () => {
+    store.index = (1 + store.index) % store.playlist.length
+    if (retry.value >= store.playlist.length) {
+      unload()
+      return
+    }
+    if (!store.currentSrc) {
+      retry.value += 1
+      return nextSong()
+    }
+    load()
+    play()
+    retry.value = 0
+  }
+
+  const prevSong = () => {
+    store.index = (store.index - 1 + store.playlist.length) % store.playlist.length
+    if (retry.value >= store.playlist.length) {
+      unload()
+      return
+    }
+    if (!store.currentSrc) {
+      retry.value += 1
+      return prevSong()
+    }
+    load()
+    play()
+    retry.value = 0
   }
 
   // 暂停
@@ -103,6 +159,26 @@ export function useAudio() {
     }
   }
 
+  // 设置音量
+  const setVolume = (vol: number) => {
+    store.volume = vol
+    if (sound) {
+      sound.volume(store.isMuted ? 0 : vol)
+    }
+    // 如果音量大于0且处于静音状态，自动取消静音
+    if (vol > 0 && store.isMuted) {
+      store.isMuted = false
+    }
+  }
+
+  // 切换静音
+  const toggleMute = () => {
+    store.isMuted = !store.isMuted
+    if (sound) {
+      sound.volume(store.isMuted ? 0 : store.volume)
+    }
+  }
+
   // 结束播放
   const unload = () => {
     if (sound) {
@@ -111,6 +187,7 @@ export function useAudio() {
       stopProgressUpdate()
       // 重置所有状态
       store.reset()
+      retry.value = 0
     }
   }
 
@@ -120,6 +197,12 @@ export function useAudio() {
     pause,
     toggle,
     seek,
+    setVolume,
+    toggleMute,
     unload,
+
+    setPlatlist,
+    nextSong,
+    prevSong,
   }
 }

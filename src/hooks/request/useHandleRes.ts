@@ -17,7 +17,7 @@ export const useHandleRes = <Payload, Res = Record<string, unknown>>(
 
   return {
     isLoading,
-    execute: async (payload: Payload) => {
+    execute: async (payload: Payload): Promise<CommonResCfg<Res> | undefined> => {
       if (timer !== null || isLoading.value) return
       timer = setTimeout(() => {
         isLoading.value = true

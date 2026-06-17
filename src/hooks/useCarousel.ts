@@ -1,11 +1,13 @@
-import { ref, computed, onMounted, onBeforeUnmount, type Ref } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, type Ref, type ComputedRef, unref } from 'vue'
 
 interface CarouselOptions {
-  totalPages: number
+  totalPages: number | Ref<number> | ComputedRef<number>
 }
 
 export function useCarousel(options: CarouselOptions) {
-  const { totalPages } = options
+  const { totalPages: totalPagesRaw } = options
+
+  const totalPages = computed(() => unref(totalPagesRaw))
 
   const currentPage = ref(0)
   const containerWidth = ref(0)
@@ -31,11 +33,17 @@ export function useCarousel(options: CarouselOptions) {
   })
 
   function prevPage() {
-    currentPage.value = (currentPage.value - 1 + totalPages) % totalPages
+    console.log('prevPage clicked, totalPages:', totalPages.value, 'currentPage:', currentPage.value)
+    const total = totalPages.value
+    if (total <= 0) return
+    currentPage.value = (currentPage.value - 1 + total) % total
   }
 
   function nextPage() {
-    currentPage.value = (currentPage.value + 1) % totalPages
+    console.log('nextPage clicked, totalPages:', totalPages.value, 'currentPage:', currentPage.value)
+    const total = totalPages.value
+    if (total <= 0) return
+    currentPage.value = (currentPage.value + 1) % total
   }
 
   function goToPage(index: number) {
