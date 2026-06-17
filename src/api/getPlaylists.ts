@@ -13,7 +13,7 @@ export interface Playlist {
 
 export type ResPayload = Playlist[]
 
-export function getPlaylists(): Promise<CommonResCfg<ResPayload>> {
+export function getPlaylists(payload: string): Promise<CommonResCfg<ResPayload>> {
   const res = request.json.get<ResPayload>(playlistsPath, {})
   abort = res.controller
   return res.promise

@@ -4,7 +4,14 @@ import type { CommonResCfg } from '@/types/requestType'
 export let abort: null | AbortController = null
 
 export interface Payload {
-  songId: number
+  songId: number | string
+  songMeta: {
+    id: number | string
+    title: string
+    artist: string
+    coverUrl: string | undefined
+    audioUrl: string | undefined
+  }
 }
 
 export interface ResPayload {
