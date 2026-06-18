@@ -5,10 +5,13 @@ import PlaylistDots from '@/components/PlaylistHot/PlaylistDots.vue'
 import { useCarousel } from '@/hooks/useCarousel'
 import { paginate } from '@/utils/paginate'
 import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useGetSongs, type GetSongsPayload } from '@/hooks/song'
 import { useGetCategories } from '@/hooks/category'
 import type { CategoryItem } from '@/hooks/category'
 import type { SongItem } from '@/api/song'
+
+const router = useRouter()
 
 const activeTab = ref(0)
 const { fetchCategories } = useGetCategories()
@@ -67,6 +70,11 @@ onMounted(async () => {
   // 获取 MV 列表（全部）
   switchTab(0)
 })
+
+// 跳转到 MV 播放页
+function goToMvVideo(id: number) {
+  router.push({ path: '/video', query: { id: String(id) } })
+}
 </script>
 
 <template>
@@ -103,6 +111,8 @@ onMounted(async () => {
                 :cover-url="song.coverUrl"
                 :mv-url="song.mvUrl"
                 :duration="song.duration"
+                :song-id="song.id"
+                @click="goToMvVideo"
               />
             </div>
           </div>
@@ -114,6 +124,8 @@ onMounted(async () => {
                 :cover-url="song.coverUrl"
                 :mv-url="song.mvUrl"
                 :duration="song.duration"
+                :song-id="song.id"
+                @click="goToMvVideo"
               />
             </div>
           </div>

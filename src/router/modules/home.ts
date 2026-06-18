@@ -23,6 +23,11 @@ export const homeRouter = [
     component: () => import('@/views/MusicPlaylist.vue'),
   },
   {
-
-  }
+    path: '/video',
+    name: 'MvVideo',
+    component: () => import('@/views/MvVideo.vue'),
+    meta: {
+      hideAudio: true,
+    },
+  },
 ]

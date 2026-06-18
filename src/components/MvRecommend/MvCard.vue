@@ -6,6 +6,7 @@ interface Props {
   coverUrl?: string | null
   mvUrl?: string | null
   duration?: number | null
+  songId?: number | null
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -14,7 +15,20 @@ const props = withDefaults(defineProps<Props>(), {
   coverUrl: '/favicon.ico',
   mvUrl: null,
   duration: null,
+  songId: null,
 })
+
+// 定义点击事件
+const emit = defineEmits<{
+  click: [id: number]
+}>()
+
+// 处理点击
+function handleClick() {
+  if (props.songId != null) {
+    emit('click', props.songId)
+  }
+}
 
 // 格式化时长
 function formatDuration(seconds: number | null): string {
@@ -26,7 +40,7 @@ function formatDuration(seconds: number | null): string {
 </script>
 
 <template>
-  <div class="mv-card">
+  <div class="mv-card" @click="handleClick">
     <div class="mv-card__cover">
       <el-image class="mv-card__image" :src="props.coverUrl ?? '/favicon.ico'" fit="cover" />
       <div class="mv-card__overlay">
