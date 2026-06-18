@@ -1,10 +1,10 @@
 import { request } from '@/utils/request'
-import { songsPath } from '@/config/api'
+import { songDetailPath } from '@/config/api'
 import type { CommonResCfg } from '@/types/requestType'
 export let abort: null | AbortController = null
 
-// 歌曲列表项结构（与后端 Song 实体一致）
-export interface SongItem {
+// 歌曲详情结构（字段与 SongItem 一致，本文件内独立定义以避免跨文件依赖）
+export interface SongDetail {
   id: number
   title: string
   artist: string | null
@@ -24,23 +24,15 @@ export interface SongItem {
 }
 
 export interface Payload {
-  page?: number
-  pageSize?: number
-  keyword?: string
-  type?: string
-  categoryId?: number
+  id: number
 }
 
-export interface ResPayload {
-  list: SongItem[]
-  total: number
-  page: number
-  pageSize: number
-}
+export type ResPayload = SongDetail
 
-export function getSongs(payload: Payload): Promise<CommonResCfg<ResPayload>> {
-  const res = request.json.get<ResPayload>(songsPath, {
-    params: payload,
+export function getSong(payload: Payload): Promise<CommonResCfg<ResPayload>> {
+  const url = songDetailPath.replace('{id}', String(payload.id))
+  const res = request.json.get<ResPayload>(url, {
+    params: {},
   })
   abort = res.controller
   return res.promise

@@ -1,8 +1,8 @@
-export { getSongs, abort as getSongsAbort } from './getSongs/getSongs'
-export type { Payload as GetSongsPayload, ResPayload as GetSongsResPayload, SongItem } from './getSongs/getSongs'
+export { getSongs, abort as getSongsAbort } from './getSongs'
+export type { Payload as GetSongsPayload, ResPayload as GetSongsResPayload, SongItem } from './getSongs'
 
-export { getSong, abort as getSongAbort } from './getSong/getSong'
-export type { Payload as GetSongPayload, ResPayload as GetSongResPayload } from './getSong/getSong'
+export { getSong, abort as getSongAbort } from './getSong'
+export type { Payload as GetSongPayload, ResPayload as GetSongResPayload, SongDetail } from './getSong'
 
-export { searchSongs, abort as searchSongsAbort } from './searchSongs/searchSongs'
-export type { Payload as SearchSongsPayload, ResPayload as SearchSongsResPayload } from './searchSongs/searchSongs'
+export { searchSongs, abort as searchSongsAbort } from './searchSongs'
+export type { Payload as SearchSongsPayload, ResPayload as SearchSongsResPayload, SongSearchItem } from './searchSongs'

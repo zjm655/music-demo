@@ -3,6 +3,15 @@ import { userProfilePath } from '@/config/api'
 import type { CommonResCfg } from '@/types/requestType'
 export let abort: null | AbortController = null
 
+export interface Payload {
+  nickname?: string
+  email?: string
+  bio?: string
+  gender?: number
+  hobby?: string
+  avatar?: string
+}
+
 // 用户资料响应结构（与后端 UserProfileResponse 一致）
 export interface ResPayload {
   id: number
@@ -16,8 +25,10 @@ export interface ResPayload {
   createTime: string | null
 }
 
-export function getUserProfile(): Promise<CommonResCfg<ResPayload>> {
-  const res = request.json.get<ResPayload>(userProfilePath, {})
+export function updateUserProfile(payload: Payload): Promise<CommonResCfg<ResPayload>> {
+  const res = request.json.put<ResPayload>(userProfilePath, {
+    data: payload,
+  })
   abort = res.controller
   return res.promise
 }

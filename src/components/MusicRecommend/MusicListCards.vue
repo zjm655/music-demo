@@ -3,13 +3,18 @@ import MusicRecommendCard from './MusicRecommendCard.vue'
 import PlaylistNav from '@/components/PlaylistHot/PlaylistNav.vue'
 import PlaylistDots from '@/components/PlaylistHot/PlaylistDots.vue'
 import { useCarousel } from '@/hooks/useCarousel'
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { paginate } from '@/utils/paginate'
 import { useGetSongs, type GetSongsPayload, type GetSongsResPayload } from '@/hooks/song'
+import { useGetCategories } from '@/hooks/category'
+import type { CategoryItem } from '@/hooks/category'
 
 const activeTab = ref(0)
-const musicTab = ['最新', '内地', '港台', '欧美', '韩国', '日本']
-// const pages = reactive([1, 2, 3, 4, 5, 6])
+const { fetchCategories } = useGetCategories()
+const categories = ref<CategoryItem[]>([])
+// 动态标签：全部 + 后端返回的分类名称
+const musicTab = computed(() => ['全部', ...categories.value.map((c) => c.name)])
+
 const playlist = ref<GetSongsResPayload>({
   list: [],
   total: 1,
@@ -34,8 +39,17 @@ const {
 
 function switchTab(index: number) {
   activeTab.value = index
+  // 根据 index 获取 categoryId：index=0 为全部，index>0 对应 categories[index-1]
+  const categoryId = index === 0 ? undefined : categories.value[index - 1]?.id
+  getSongs({
+    page: 1,
+    pageSize: 54,
+    type: 'song',
+    categoryId,
+  })
 }
 
+// 获取歌曲列表
 async function getSongs(payload: GetSongsPayload) {
   const request = useGetSongs()
   const res = await request.fetchSongs(payload)
@@ -44,10 +58,19 @@ async function getSongs(payload: GetSongsPayload) {
   }
 }
 
-getSongs({
-  page: 1,
-  pageSize: 54,
-  type: 'song',
+// 组件挂载时获取分类列表和歌曲列表
+onMounted(async () => {
+  // 获取分类列表
+  const catRes = await fetchCategories()
+  if (catRes?.code === 200 && catRes?.data) {
+    categories.value = catRes.data
+  }
+  // 获取歌曲列表
+  await getSongs({
+    page: 1,
+    pageSize: 54,
+    type: 'song',
+  })
 })
 </script>
 

@@ -1,42 +1,42 @@
 <script setup lang="ts">
-import { VideoPlay } from '@element-plus/icons-vue'
+// 适配 SongItem 类型，移除播放量字段
 interface Props {
-  name?: string
-  artist?: string
-  playCount?: number
-  imageUrl?: string
+  title?: string
+  artist?: string | null
+  coverUrl?: string | null
+  mvUrl?: string | null
+  duration?: number | null
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  name: '搬家',
-  artist: '张震岳',
-  playCount: 6005,
-  imageUrl: '/favicon.ico',
+  title: '未知歌曲',
+  artist: '未知歌手',
+  coverUrl: '/favicon.ico',
+  mvUrl: null,
+  duration: null,
 })
 
-function formatPlayCount(count: number): string {
-  if (count >= 10000) {
-    const wan = count / 10000
-    return wan >= 10 ? `${Math.round(wan)}万` : `${wan.toFixed(1)}万`
-  }
-  return String(count)
+// 格式化时长
+function formatDuration(seconds: number | null): string {
+  if (seconds == null) return '--:--'
+  const mins = Math.floor(seconds / 60)
+  const secs = seconds % 60
+  return `${mins}:${secs.toString().padStart(2, '0')}`
 }
 </script>
 
 <template>
   <div class="mv-card">
     <div class="mv-card__cover">
-      <el-image class="mv-card__image" :src="props.imageUrl" fit="cover" />
+      <el-image class="mv-card__image" :src="props.coverUrl ?? '/favicon.ico'" fit="cover" />
       <div class="mv-card__overlay">
         <span class="mv-card__play-icon"></span>
       </div>
-      <span class="mv-card__count">
-        <el-icon><VideoPlay /></el-icon>{{ formatPlayCount(props.playCount) }}</span
-      >
+      <span class="mv-card__duration">{{ formatDuration(props.duration) }}</span>
     </div>
     <div class="mv-card__info">
-      <p class="mv-card__name" :title="props.name">{{ props.name }}</p>
-      <span class="mv-card__artist">{{ props.artist }}</span>
+      <p class="mv-card__name" :title="props.title ?? ''">{{ props.title }}</p>
+      <span class="mv-card__artist">{{ props.artist ?? '未知歌手' }}</span>
     </div>
   </div>
 </template>
@@ -109,8 +109,8 @@ function formatPlayCount(count: number): string {
   transform: scale(1.1);
 }
 
-/* Play count badge on cover */
-.mv-card__count {
+/* Duration badge on cover */
+.mv-card__duration {
   position: absolute;
   bottom: var(--space-xs);
   right: var(--space-xs);
@@ -120,9 +120,6 @@ function formatPlayCount(count: number): string {
   padding: 1px 6px;
   border-radius: var(--radius-sm);
   line-height: var(--line-height-tight);
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 /* Text section */
