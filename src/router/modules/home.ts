@@ -22,4 +22,7 @@ export const homeRouter = [
     name: 'MusicPlaylist',
     component: () => import('@/views/MusicPlaylist.vue'),
   },
+  {
+
+  }
 ]

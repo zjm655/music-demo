@@ -1,16 +1,16 @@
 <script setup lang="ts">
-// 适配 SongItem 类型，移除播放量字段
+// 适配 SongItem 的 MV 字段
 interface Props {
-  title?: string
-  artist?: string | null
+  mvDescription?: string | null
+  mvAuthor?: string | null
   coverUrl?: string | null
   mvUrl?: string | null
   duration?: number | null
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  title: '未知歌曲',
-  artist: '未知歌手',
+  mvDescription: null,
+  mvAuthor: null,
   coverUrl: '/favicon.ico',
   mvUrl: null,
   duration: null,
@@ -35,8 +35,8 @@ function formatDuration(seconds: number | null): string {
       <span class="mv-card__duration">{{ formatDuration(props.duration) }}</span>
     </div>
     <div class="mv-card__info">
-      <p class="mv-card__name" :title="props.title ?? ''">{{ props.title }}</p>
-      <span class="mv-card__artist">{{ props.artist ?? '未知歌手' }}</span>
+      <p class="mv-card__name" :title="props.mvDescription ?? ''">{{ props.mvDescription ?? '未知 MV' }}</p>
+      <span class="mv-card__artist">{{ props.mvAuthor ?? '未知作者' }}</span>
     </div>
   </div>
 </template>

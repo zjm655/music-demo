@@ -98,8 +98,8 @@ onMounted(async () => {
           <div class="mv-recommend__row">
             <div class="mv-recommend__card" v-for="song in page.slice(0, 3)" :key="song.id">
               <mv-card
-                :title="song.title"
-                :artist="song.artist"
+                :mv-description="song.mvDescription"
+                :mv-author="song.mvAuthor"
                 :cover-url="song.coverUrl"
                 :mv-url="song.mvUrl"
                 :duration="song.duration"
@@ -109,8 +109,8 @@ onMounted(async () => {
           <div class="mv-recommend__row" v-if="page.length > 3">
             <div class="mv-recommend__card" v-for="song in page.slice(3, 6)" :key="song.id">
               <mv-card
-                :title="song.title"
-                :artist="song.artist"
+                :mv-description="song.mvDescription"
+                :mv-author="song.mvAuthor"
                 :cover-url="song.coverUrl"
                 :mv-url="song.mvUrl"
                 :duration="song.duration"
