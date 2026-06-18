@@ -16,6 +16,8 @@ interface Props {
   coverUrl: string | null
   createTime: string
   categoryId: number | null
+  active?: boolean
+  index?: number | string
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -25,11 +27,26 @@ const props = withDefaults(defineProps<Props>(), {
   coverUrl: '/favicon.ico',
   audioUrl: '',
   category: '未分类',
+  active: false,
 })
+
+function formatDuration(seconds: number | null): string {
+  if (typeof seconds !== 'number' || seconds <= 0) return '--:--'
+  const m = Math.floor(seconds / 60)
+  const s = Math.floor(seconds % 60)
+  return `${m}:${s.toString().padStart(2, '0')}`
+}
 </script>
 
 <template>
-  <div class="song-card">
+  <div class="song-card" :class="{ 'song-card--active': props.active }">
+    <div v-if="props.active" class="song-playing-icon">
+      <span class="song-playing-icon__bar"></span>
+      <span class="song-playing-icon__bar"></span>
+      <span class="song-playing-icon__bar"></span>
+    </div>
+    <span v-else-if="props.index !== undefined" class="song-index">{{ props.index }}</span>
+
     <div class="song-cover-wrapper">
       <el-image class="song-cover" :src="props.coverUrl" fit="cover" />
       <div class="song-cover-overlay">
@@ -46,7 +63,7 @@ const props = withDefaults(defineProps<Props>(), {
       >
     </div>
 
-    <span class="song-duration">{{}}</span>
+    <span class="song-duration">{{ formatDuration(props.duration) }}</span>
   </div>
 </template>
 
@@ -62,6 +79,59 @@ const props = withDefaults(defineProps<Props>(), {
 
 .song-card:hover {
   background: var(--color-bg-hover, #f3e8ff);
+}
+
+.song-card--active {
+  background: var(--color-bg-active, #ede9fe);
+}
+
+.song-card--active .song-name {
+  color: var(--color-primary, #8b5cf6);
+}
+
+.song-index {
+  flex-shrink: 0;
+  min-width: 20px;
+  text-align: center;
+  font-size: var(--font-size-xs, 12px);
+  color: var(--color-text-muted, #9ca3af);
+  font-variant-numeric: tabular-nums;
+}
+
+.song-playing-icon {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.song-playing-icon__bar {
+  display: block;
+  width: 3px;
+  height: 100%;
+  background-color: var(--color-primary, #8b5cf6);
+  border-radius: var(--radius-full, 9999px);
+  transform-origin: bottom;
+  animation: song-playing-bounce 1s ease-in-out infinite;
+}
+
+.song-playing-icon__bar:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.song-playing-icon__bar:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes song-playing-bounce {
+  0%,
+  100% {
+    transform: scaleY(0.3);
+  }
+  50% {
+    transform: scaleY(1);
+  }
 }
 
 .song-cover-wrapper {
