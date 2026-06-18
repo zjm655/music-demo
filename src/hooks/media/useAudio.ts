@@ -135,10 +135,13 @@ export function useAudio() {
     retry.value = 0
   }
 
-  const addSong = () => {}
+  const addSongNext = (song: Song) => {
+    store.playlist.splice(store.index + 1, 0, song)
+  }
 
-  const addSongs = () => {}
-
+  function addSongsToEnd(songs: Song[]) {
+    store.playlist.push(...songs)
+  }
   // 暂停
   const pause = () => {
     if (sound) {
@@ -208,5 +211,7 @@ export function useAudio() {
     setPlatlist,
     nextSong,
     prevSong,
+    addSongNext,
+    addSongsToEnd,
   }
 }

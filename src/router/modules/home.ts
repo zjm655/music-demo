@@ -1,9 +1,7 @@
-import component from 'element-plus/es/components/tree-select/src/tree-select-option.mjs'
-
 export const homeRouter = [
   {
     path: '/home',
-    name: 'MyHome',
+    name: 'MusicHome',
     component: () => import('@/views/MusicHome.vue'),
   },
   {
@@ -18,5 +16,10 @@ export const homeRouter = [
     path: '/user-center',
     name: 'UserCenter',
     component: () => import('@/views/UserCenter.vue'),
+  },
+  {
+    path: '/playlist',
+    name: 'MusicPlaylist',
+    component: () => import('@/views/MusicPlaylist.vue'),
   },
 ]

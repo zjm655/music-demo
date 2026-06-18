@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useAudioStore } from '@/stores/audio'
 import { useAudio } from '@/hooks/media'
+import { useRouter } from 'vue-router'
 import {
   CaretRight,
   VideoPause,
@@ -14,6 +15,7 @@ import {
 
 const audioStore = useAudioStore()
 const audio = useAudio()
+const router = useRouter()
 
 // 拖动进度条
 const handleSeek = (e: Event) => {
@@ -25,6 +27,10 @@ const handleSeek = (e: Event) => {
 const handleVolume = (e: Event) => {
   const val = (e.target as HTMLInputElement).valueAsNumber
   audio.setVolume(val)
+}
+
+function openPlaylist() {
+  router.push({ name: 'MusicPlaylist' })
 }
 </script>
 
@@ -119,7 +125,7 @@ const handleVolume = (e: Event) => {
     </div>
 
     <!-- 播放列表 -->
-    <button class="player__btn" title="播放列表">
+    <button class="player__btn" title="播放列表" @click="openPlaylist()">
       <el-icon><Operation /></el-icon>
     </button>
   </div>
@@ -146,6 +152,7 @@ const handleVolume = (e: Event) => {
   height: 44px;
   border-radius: var(--radius-full);
   overflow: hidden;
+  cursor: pointer;
 }
 
 .player__art-img {
@@ -182,7 +189,7 @@ const handleVolume = (e: Event) => {
   overflow: hidden;
   text-overflow: ellipsis;
   line-height: 1.3;
-  cursor: pointer;
+  /* cursor: pointer; */
 }
 
 .player__artist {
