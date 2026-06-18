@@ -1,4 +1,3 @@
-import type { AxiosResponse } from 'axios'
 interface MsgTips {
   success: string
   clientFail: string

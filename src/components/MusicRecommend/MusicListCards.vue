@@ -5,12 +5,12 @@ import PlaylistDots from '@/components/PlaylistHot/PlaylistDots.vue'
 import { useCarousel } from '@/hooks/useCarousel'
 import { ref, computed } from 'vue'
 import { paginate } from '@/utils/paginate'
-import { useGetSongs, type SongsPayload, type SongsResPayload } from '@/hooks/songs'
+import { useGetSongs, type GetSongsPayload, type GetSongsResPayload } from '@/hooks/song'
 
 const activeTab = ref(0)
 const musicTab = ['最新', '内地', '港台', '欧美', '韩国', '日本']
 // const pages = reactive([1, 2, 3, 4, 5, 6])
-const playlist = ref<SongsResPayload>({
+const playlist = ref<GetSongsResPayload>({
   list: [],
   total: 1,
   page: 1,
@@ -36,9 +36,9 @@ function switchTab(index: number) {
   activeTab.value = index
 }
 
-async function getSongs(payload: SongsPayload) {
+async function getSongs(payload: GetSongsPayload) {
   const request = useGetSongs()
-  const res = await request.userGetSongs(payload)
+  const res = await request.fetchSongs(payload)
   if (res?.code === 200 && res?.data != undefined) {
     playlist.value = res?.data
   }

@@ -2,7 +2,7 @@
 import { ref, computed, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import type { FormInstance, FormRules } from 'element-plus'
-import { useUserLogin, useUserRegister } from '@/hooks/user'
+import { useLogin, useRegister } from '@/hooks/user'
 
 const router = useRouter()
 const activeTab = ref('login')
@@ -13,7 +13,7 @@ const loginForm = reactive({
   username: '',
   password: '',
 })
-const { userToLogin, isLoading: loginLoading } = useUserLogin()
+const { login, isLoading: loginLoading } = useLogin()
 
 const loginRules: FormRules = {
   username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
@@ -23,7 +23,7 @@ const loginRules: FormRules = {
 const handleLogin = async () => {
   const valid = await loginFormRef.value?.validate().catch(() => false)
   if (!valid) return
-  const res = await userToLogin(loginForm)
+  const res = await login(loginForm)
   if (res?.code === 200) {
     router.push('/home')
   }
@@ -37,7 +37,7 @@ const registerForm = reactive({
   password: '',
   confirmPassword: '',
 })
-const { userToRegister, isLoading: registerLoading } = useUserRegister()
+const { register, isLoading: registerLoading } = useRegister()
 
 const validateConfirmPassword = (
   _rule: unknown,
@@ -93,7 +93,7 @@ const passwordStrength = computed(() => {
 const handleRegister = async () => {
   const valid = await registerFormRef.value?.validate().catch(() => false)
   if (!valid) return
-  const res = await userToRegister({
+  const res = await register({
     username: registerForm.username,
     email: registerForm.email,
     password: registerForm.password,

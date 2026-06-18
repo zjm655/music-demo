@@ -4,7 +4,7 @@ import SongCard from '@/components/MusicRecommend/SongCard.vue'
 
 defineProps<{
   songs: Song[]
-  activeId?: string
+  activeId?: number | string
 }>()
 
 const emit = defineEmits<{

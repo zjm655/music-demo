@@ -90,6 +90,62 @@ export function useAudio() {
     })
   }
 
+  // 通过指定 url 加载音频（用于第三方歌曲，不依赖 store.currentSrc）
+  const loadByUrl = (url: string) => {
+    if (sound) {
+      sound.unload()
+      stopProgressUpdate()
+    }
+    const song = store.currentSong
+    // 更新歌曲信息
+    if (song) {
+      store.title = song.title || ''
+      store.artist = song.artist || ''
+      store.coverUrl = song.coverUrl || ''
+      store.currentTime = 0
+      store.duration = 0
+    }
+
+    if (!url) {
+      logger.warn('音频资源加载失败！')
+      return
+    }
+
+    sound = new Howl({
+      src: [String(url)],
+      html5: true,
+      volume: store.isMuted ? 0 : store.volume,
+      onplay: () => {
+        store.isPlaying = true
+        startProgressUpdate()
+      },
+      onend: () => {
+        store.isPlaying = false
+        store.currentTime = store.duration
+        stopProgressUpdate()
+        // 自动播放下一首（播放列表只有一首时不切）
+        if (store.playlist.length > 1) {
+          nextSong()
+        }
+      },
+      onstop: () => {
+        store.isPlaying = false
+        stopProgressUpdate()
+      },
+      onload: () => {
+        store.duration = sound?.duration() || 0
+      },
+      onloaderror: () => {
+        store.isPlaying = false
+        stopProgressUpdate()
+      },
+      onplayerror: () => {
+        store.isPlaying = false
+        stopProgressUpdate()
+      },
+    })
+  }
+
   const setPlatlist = (playlist: Song[], index: number) => {
     store.playlist = playlist
     store.index = index
@@ -103,36 +159,70 @@ export function useAudio() {
     }
   }
 
+  // 通过指定 url 加载并播放（用于第三方歌曲）
+  const playByUrl = (url: string) => {
+    loadByUrl(url)
+    play()
+  }
+
   const retry = ref(0)
   // 下一首
-  const nextSong = () => {
+  const nextSong = async (getUrl?: (song: Song) => Promise<string | null>) => {
     store.index = (1 + store.index) % store.playlist.length
     if (retry.value >= store.playlist.length) {
       unload()
       return
     }
-    if (!store.currentSrc) {
-      retry.value += 1
-      return nextSong()
+    if (getUrl) {
+      // 第三方歌曲：通过 getUrl 获取播放链接
+      const current = store.currentSong
+      const url = current ? await getUrl(current) : null
+      if (!url) {
+        retry.value += 1
+        return nextSong(getUrl)
+      }
+      loadByUrl(url)
+      play()
+      retry.value = 0
+    } else {
+      // 本地歌曲：沿用 store.currentSrc
+      if (!store.currentSrc) {
+        retry.value += 1
+        return nextSong()
+      }
+      load()
+      play()
+      retry.value = 0
     }
-    load()
-    play()
-    retry.value = 0
   }
 
-  const prevSong = () => {
+  const prevSong = async (getUrl?: (song: Song) => Promise<string | null>) => {
     store.index = (store.index - 1 + store.playlist.length) % store.playlist.length
     if (retry.value >= store.playlist.length) {
       unload()
       return
     }
-    if (!store.currentSrc) {
-      retry.value += 1
-      return prevSong()
+    if (getUrl) {
+      // 第三方歌曲：通过 getUrl 获取播放链接
+      const current = store.currentSong
+      const url = current ? await getUrl(current) : null
+      if (!url) {
+        retry.value += 1
+        return prevSong(getUrl)
+      }
+      loadByUrl(url)
+      play()
+      retry.value = 0
+    } else {
+      // 本地歌曲：沿用 store.currentSrc
+      if (!store.currentSrc) {
+        retry.value += 1
+        return prevSong()
+      }
+      load()
+      play()
+      retry.value = 0
     }
-    load()
-    play()
-    retry.value = 0
   }
 
   const addSongNext = (song: Song) => {
@@ -153,7 +243,11 @@ export function useAudio() {
 
   // 切换暂停于播放
   const toggle = () => {
-    store.isPlaying ? pause() : play()
+    if (store.isPlaying) {
+      pause()
+    } else {
+      play()
+    }
   }
 
   // 手动切换播放进度
@@ -200,7 +294,9 @@ export function useAudio() {
 
   return {
     load,
+    loadByUrl,
     play,
+    playByUrl,
     pause,
     toggle,
     seek,

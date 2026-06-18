@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 export interface Song {
-  id: string
+  id: number | string
   title: string
   artist: string | null
   album: string | null
@@ -15,8 +15,12 @@ export interface Song {
   mvAuthor: string | null
   category: string | null
   coverUrl: string | null
-  createTime: string
+  createTime: string | null
   categoryId: number | null
+  // 数据来源：'local' 本地数据库 | 'tencent' 第三方腾讯
+  source?: string
+  // 第三方 MV 的 vid
+  vid?: string | null
 }
 
 export const useAudioStore = defineStore('audio', () => {

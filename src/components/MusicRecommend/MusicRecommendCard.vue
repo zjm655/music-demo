@@ -1,18 +1,12 @@
 <script setup lang="ts">
 import SongCard from './SongCard.vue'
-// import { useGetSongs } from '@/hooks/songs'
-import type { SongsResPayload } from '@/hooks/songs'
-// import { useGetSong } from '@/hooks/songs'
+import type { GetSongsResPayload } from '@/hooks/song'
 import { useAudio } from '@/hooks/media'
-
-// interface Props {
-//   songs?: Song[]
-// }
 
 // 如果需要默认值，必须搭配 withDefaults
 const props = withDefaults(
   defineProps<{
-    songs: SongsResPayload['list']
+    songs: GetSongsResPayload['list']
     pageIndex: number | string
     size: number | string
   }>(),
@@ -23,8 +17,6 @@ const props = withDefaults(
 )
 
 async function openAudio(id: number) {
-  // const request = useGetSong()
-  // const res = await request.userGetSong({ id })
   useAudio().setPlatlist(props.songs, Number(id))
   useAudio().load()
   useAudio().play()

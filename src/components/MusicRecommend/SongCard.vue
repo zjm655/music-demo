@@ -1,6 +1,6 @@
 <script setup lang="ts">
 interface Props {
-  id: string
+  id: number | string
   title: string
   artist: string | null
   album: string | null
@@ -14,7 +14,7 @@ interface Props {
   mvAuthor: string | null
   category: string | null
   coverUrl: string | null
-  createTime: string
+  createTime: string | null
   categoryId: number | null
   active?: boolean
   index?: number | string
