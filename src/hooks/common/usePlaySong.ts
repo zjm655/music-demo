@@ -1,6 +1,5 @@
 import { useAudio } from '@/hooks/media'
 import { useGetPlayUrl } from '@/hooks/thirdparty'
-import { popup } from '@/utils/popup'
 import type { Song } from '@/stores/audio'
 
 // 可播放歌曲的最小结构
@@ -40,23 +39,8 @@ export const usePlaySong = () => {
       audio.setPlatlist(playlist, index)
     }
 
-    // 获取播放链接：有 audioUrl 直接用；否则第三方请求 fetchPlayUrl；本地无 audioUrl 则为 null
-    let url: string | null = song.audioUrl ?? null
-    if (!url) {
-      const id = String(song.id)
-      if (isThirdpartyId(id)) {
-        const res = await fetchPlayUrl({ mid: id })
-        url = res.data ?? null
-      }
-    }
-
-    // 无可用音频时提示并返回
-    if (!url) {
-      popup.message.warning('该歌曲暂无可用音频')
-      return
-    }
-
-    audio.playByUrl(url)
+    // 直接调用 loadById，统一处理本地和第三方歌曲
+    await audio.loadById(song.id)
   }
 
   return { playSong, getUrl }
