@@ -97,9 +97,15 @@ const handleRegister = async () => {
     username: registerForm.username,
     email: registerForm.email,
     password: registerForm.password,
+    confirmPassword: registerForm.confirmPassword,
   })
   if (res?.code === 200) {
-    router.push('/home')
+    activeTab.value = 'login'
+    // 清空注册表单
+    registerForm.username = ''
+    registerForm.email = ''
+    registerForm.password = ''
+    registerForm.confirmPassword = ''
   }
 }
 </script>

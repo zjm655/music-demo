@@ -20,7 +20,7 @@ export const useUserRegister = () => {
     const res = await execute(payload)
     if (res?.code === 200) {
       useUserStore().isLogin = true
-      localStorage.setItem('token', res.data?.token)
+      // localStorage.setItem('token', res.data?.token)
       useUserStore().loadUserInfo(res.data)
     } else {
       useUserStore().isLogin = false

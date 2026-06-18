@@ -6,13 +6,13 @@ export let abort: null | AbortController = null
 export interface Payload {
   username: string
   password: string
+  confirmPassword: string
   email: string
 }
 
 export interface ResPayload {
   userId: number | string
   username: string
-  token: string
 }
 
 export function register(payload: Payload): Promise<CommonResCfg<ResPayload>> {

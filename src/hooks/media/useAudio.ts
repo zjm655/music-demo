@@ -135,6 +135,10 @@ export function useAudio() {
     retry.value = 0
   }
 
+  const addSong = () => {}
+
+  const addSongs = () => {}
+
   // 暂停
   const pause = () => {
     if (sound) {
