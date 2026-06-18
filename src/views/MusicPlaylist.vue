@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import LeftList from '@/components/MusicPlaylist/LeftList.vue'
 import RightLyric from '@/components/MusicPlaylist/RightLyric.vue'
 </script>
 
 <template>
   <div class="music-playlist-main">
     <div class="music-playlist-main__left">
-      <left-list />
+      <router-view />
     </div>
     <div class="music-playlist-main__right">
       <right-lyric />

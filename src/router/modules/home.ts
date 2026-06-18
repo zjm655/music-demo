@@ -20,7 +20,15 @@ export const homeRouter = [
   {
     path: '/playlist',
     name: 'MusicPlaylist',
+    redirect: '/playlist/audio',
     component: () => import('@/views/MusicPlaylist.vue'),
+    children: [
+      {
+        path: 'audio',
+        name: 'AudioPlaylist',
+        component: () => import('@/views/AudioPlaylist.vue'),
+      },
+    ],
   },
   {
     path: '/video',
