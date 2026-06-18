@@ -4,7 +4,6 @@ interface Props {
   title: string
   artist: string | null
   album: string | null
-  duration: number | null
   lyricist: string | null
   composer: string | null
   lyrics: string | null
@@ -30,16 +29,23 @@ const props = withDefaults(defineProps<Props>(), {
   active: false,
 })
 
-function formatDuration(seconds: number | null): string {
-  if (typeof seconds !== 'number' || seconds <= 0) return '--:--'
-  const m = Math.floor(seconds / 60)
-  const s = Math.floor(seconds % 60)
-  return `${m}:${s.toString().padStart(2, '0')}`
+const emit = defineEmits<{
+  click: [id: number | string]
+  addNextClick: [id: number | string]
+}>()
+
+function handleCardClick() {
+  emit('click', props.id)
+}
+
+function handleAddNext(e: Event) {
+  e.stopPropagation()
+  emit('addNextClick', props.id)
 }
 </script>
 
 <template>
-  <div class="song-card" :class="{ 'song-card--active': props.active }">
+  <div class="song-card" :class="{ 'song-card--active': props.active }" @click="handleCardClick">
     <div v-if="props.active" class="song-playing-icon">
       <span class="song-playing-icon__bar"></span>
       <span class="song-playing-icon__bar"></span>
@@ -63,7 +69,9 @@ function formatDuration(seconds: number | null): string {
       >
     </div>
 
-    <span class="song-duration">{{ formatDuration(props.duration) }}</span>
+    <button class="add-next-btn" @click="handleAddNext" title="添加到下一首">
+      <span class="add-next-icon"></span>
+    </button>
   </div>
 </template>
 
@@ -216,10 +224,35 @@ function formatDuration(seconds: number | null): string {
   line-height: 1.4;
 }
 
-.song-duration {
+.add-next-btn {
   flex-shrink: 0;
-  font-size: var(--font-size-xs, 12px);
-  color: var(--color-text-muted, #9ca3af);
-  margin-left: auto;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: var(--radius-sm, 4px);
+  background: transparent;
+  cursor: pointer;
+  transition: background var(--transition-fast, 0.15s);
+}
+
+.add-next-btn:hover {
+  background: var(--color-bg-hover, #f3e8ff);
+}
+
+.add-next-btn:hover .add-next-icon {
+  border-left-color: var(--color-primary, #8b5cf6);
+}
+
+.add-next-icon {
+  display: block;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 6px 0 6px 10px;
+  border-color: transparent transparent transparent var(--color-text-muted, #9ca3af);
+  transition: border-color var(--transition-fast, 0.15s);
 }
 </style>

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { computed } from 'vue'
 import SongList from '@/components/MusicPlaylist/SongList.vue'
 import AudioSong from '@/components/MusicPlaylist/AudioSong.vue'
 import { useAudioStore } from '@/stores/audio'
@@ -8,9 +7,6 @@ const audioStore = useAudioStore()
 
 // 表头配置
 const header = ['#', '标题', '歌手', '', '', '', '时长']
-
-// 当前播放歌曲 ID
-const currentSongId = computed(() => audioStore.currentSong?.id)
 
 // 处理歌曲选择
 function handleSelect(index: number) {
@@ -31,7 +27,7 @@ function handleSelect(index: number) {
         :lyricist="song.lyricist"
         :composer="song.composer"
         :duration="song.duration"
-        :active="song.id === currentSongId"
+        :active="index === audioStore.index"
         :index="index + 1"
         @select="handleSelect(index)"
       />

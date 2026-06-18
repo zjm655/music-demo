@@ -2,6 +2,7 @@
 defineProps<{
   isNull?: boolean
   header?: string[]
+  activeIndex?: number
 }>()
 </script>
 
@@ -32,7 +33,7 @@ defineProps<{
 
     <!-- 滚动内容区 -->
     <el-scrollbar>
-      <slot />
+      <slot :active-index="activeIndex" />
     </el-scrollbar>
   </div>
 </template>
