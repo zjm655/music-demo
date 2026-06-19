@@ -2,7 +2,7 @@
 import { useAudioStore } from '@/stores/audio'
 import { useAudio } from '@/hooks/media'
 import SongList from '@/components/MusicPlaylist/SongList.vue'
-import AudioSong from '@/components/MusicPlaylist/AudioSong.vue'
+import AudioSong from '@/components/MusicPlaylist/card/AudioSong.vue'
 
 const store = useAudioStore()
 const audio = useAudio()

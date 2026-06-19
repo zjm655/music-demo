@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { homeRouter } from './modules/home'
+import { playlistRouter } from './modules/playlist'
 import { useAudioStore } from '@/stores/audio'
 
 const router = createRouter({
@@ -7,6 +8,7 @@ const router = createRouter({
   routes: [
     { path: '/', redirect: '/home' },
     ...homeRouter,
+    ...playlistRouter,
     { path: '/:pathMatch(.*)*', redirect: '/home' },
   ],
 })

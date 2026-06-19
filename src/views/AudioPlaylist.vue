@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import SongList from '@/components/MusicPlaylist/SongList.vue'
-import AudioSong from '@/components/MusicPlaylist/AudioSong.vue'
+import AudioSong from '@/components/MusicPlaylist/card/AudioSong.vue'
 import { useAudioStore } from '@/stores/audio'
 
 const audioStore = useAudioStore()
 
 // 表头配置
-const header = ['#', '标题', '歌手', '', '', '', '时长']
+const header = ['#', '标题', '歌手', '作曲', '作词', '', '时长']
 
 // 处理歌曲选择
 function handleSelect(index: number) {

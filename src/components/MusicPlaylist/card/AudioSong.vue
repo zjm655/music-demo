@@ -120,8 +120,8 @@ function formatDuration(seconds: number | null): string {
   flex: 1.5;
   min-width: 0;
   font-size: var(--font-size-xs, 12px);
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.75);
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.903);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

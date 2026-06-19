@@ -3,3 +3,6 @@ export type { UnifiedSong, UnifiedSongResult, ThirdpartyMeta } from './useGetSon
 
 export { usePlaySong } from './usePlaySong'
 export type { PlayableSong } from './usePlaySong'
+
+export { useSearchUnified } from './useSearchUnified'
+export type { UnifiedSearchResult, SearchUnifiedPayload, SearchUnifiedResPayload } from './useSearchUnified'
