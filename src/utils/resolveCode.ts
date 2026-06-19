@@ -1,5 +1,6 @@
 import { logger } from '@/utils/logger'
 import type { LogCfg } from '@/types/requestType'
+import router from '@/router'
 
 // 状态码处理工具：根据后端返回的 code 进行日志记录
 // 不再进行弹窗提示，弹窗逻辑由调用方按需通过 popup 工具触发
@@ -18,7 +19,7 @@ export const resolveCode = (logCfg: LogCfg) => {
       logger.warn(logCfg?.message || '登录已过期，请重新登录')
       // 清除本地 token 并跳转登录页
       localStorage.removeItem('token')
-      window.location.href = '/login'
+      router.push('/login')
       break
     case 403:
       logger.warn(logCfg?.message || '权限不足')

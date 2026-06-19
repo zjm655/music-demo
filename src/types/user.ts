@@ -3,4 +3,9 @@ export interface UserInfo {
   userId?: number | string
   email?: string
   nickname?: string
+  bio?: string
+  gender?: number
+  hobby?: string
+  avatar?: string
+  createTime?: string
 }
