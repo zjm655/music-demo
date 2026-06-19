@@ -4,13 +4,32 @@ import { useThemeStore } from '@/stores/theme'
 import { Search } from '@element-plus/icons-vue'
 import { Moon, Sunny, ArrowDown } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 const activeNames = ref(['0'])
 const bgMode = ref(false)
+const keyword = ref('')
+
 function changeBgMode() {
   document.documentElement.classList.toggle('dark')
 }
 
 const drawer = ref(false)
+
+const handleSearch = () => {
+  if (!keyword.value.trim()) return
+  router.push({
+    path: '/playlist/search',
+    query: { keyword: keyword.value }
+  })
+}
+
+const handleKeydown = (e: KeyboardEvent) => {
+  if (e.key === 'Enter') {
+    handleSearch()
+  }
+}
 </script>
 
 <template>
@@ -25,8 +44,14 @@ const drawer = ref(false)
       >
     </nav>
     <div class="music-header__search">
-      <input type="text" class="music-header__input" placeholder="搜索歌曲、歌手" />
-      <button class="music-header__btn">
+      <input
+        type="text"
+        class="music-header__input"
+        placeholder="搜索歌曲、歌手"
+        v-model="keyword"
+        @keydown="handleKeydown"
+      />
+      <button class="music-header__btn" @click="handleSearch">
         <el-icon><Search /></el-icon>
       </button>
     </div>

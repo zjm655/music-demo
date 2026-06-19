@@ -57,7 +57,7 @@ export const useSearchUnified = () => {
     isLoading.value = true
     error.value = null
 
-    const { keyword, page = 1, pageSize = 20, includeThirdParty = true } = payload
+    const { keyword, page = 1, pageSize = 35, includeThirdParty = true } = payload
 
     try {
       const promises: Promise<UnifiedSearchResult[]>[] = []

@@ -45,7 +45,7 @@ defineProps<{
 
 .song-list :deep(.el-scrollbar),
 .song-list :deep(.el-scrollbar__wrap) {
-  height: 100%;
+  height: 94%;
 }
 
 .song-list :deep(.el-scrollbar__view) {

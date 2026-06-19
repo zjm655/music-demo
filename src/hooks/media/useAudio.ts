@@ -1,7 +1,6 @@
 import { Howl } from 'howler'
 import { useAudioStore, type Song } from '@/stores/audio'
-import { useGetPlayUrl } from '@/hooks/thirdparty'
-import { useGetSong } from '@/hooks/song'
+import { useGetSongUnified, type ThirdpartyMeta } from '@/hooks/common'
 import { popup } from '@/utils/popup'
 import { logger } from '@/utils/logger'
 import { ref } from 'vue'
@@ -9,9 +8,6 @@ import { ref } from 'vue'
 // Howl是外部库实例，不方便进行响应式，因此不放到store里面，而是放在这里进行隔离
 let sound: Howl | null = null
 let rafId: number | null = null
-
-// 判断是否为第三方歌曲 id（非纯数字）
-const isThirdpartyId = (id: string | number) => !/^\d+$/.test(String(id))
 
 export function useAudio() {
   const store = useAudioStore()
@@ -94,78 +90,69 @@ export function useAudio() {
     })
   }
 
-  // 辅助函数：更新 playlist 中的歌曲信息
-  function updateSongInPlaylist(song: Song) {
-    const index = store.playlist.findIndex((s) => s.id === song.id)
-    if (index !== -1) {
-      store.playlist[index] = { ...store.playlist[index], ...song }
-    }
-  }
-
-  // 通过 id 加载并播放（统一处理本地和第三方歌曲）
+  // 通过 id 加载并播放
+  // - 已在 playlist：直接用已有信息（audioUrl 缺失时才请求）
+  // - 不在 playlist：调用 useGetSongUnified 获取完整信息
   const loadById = async (id?: number | string) => {
-    // 1. 确定目标 id
     const targetId = id ?? store.currentSong?.id
     if (targetId == null) {
       popup.message.warning('请先选择歌曲')
       return
     }
 
-    // 2. 从 playlist 找到歌曲并更新 index
-    let songIndex = store.playlist.findIndex((s) => s.id === targetId)
+    const songId = String(targetId)
 
-    // 3. 获取播放链接
-    let url: string | null = null
-    let currentSong = songIndex !== -1 ? store.playlist[songIndex] : null
+    // 1. 查找歌曲是否已在 playlist
+    let songIndex = store.playlist.findIndex((s) => String(s.id) === songId)
 
-    // 第三方歌曲需要异步获取
-    if (isThirdpartyId(targetId)) {
-      const { fetchPlayUrl } = useGetPlayUrl()
-      const { fetchSong } = useGetSong()
+    if (songIndex !== -1) {
+      // 已在 playlist：直接用已有信息，只补缺失的 audioUrl
+      const song = store.playlist[songIndex]
+      if (!song) {
+        popup.message.warning('歌曲信息异常')
+        return
+      }
 
-      // 并行请求播放链接和歌曲详情
-      const [playRes, songRes] = await Promise.all([
-        fetchPlayUrl({ mid: String(targetId) }),
-        fetchSong({ id: Number(targetId) }),
-      ])
-
-      url = playRes?.data ?? null
-
-      // 更新歌曲详情到 playlist
-      if (songRes?.code === 200 && songRes?.data) {
-        const fullSong = songRes.data as unknown as Song
-        // 如果歌曲不在 playlist 中，先添加
-        if (songIndex === -1) {
-          store.playlist.push(fullSong)
-          songIndex = store.playlist.length - 1
-        } else {
-          updateSongInPlaylist(fullSong)
+      // 第三方歌曲可能没有 audioUrl，需要请求播放链接
+      if (!song.audioUrl) {
+        const { getSongUnified } = useGetSongUnified()
+        const res = await getSongUnified(songId)
+        if (res.code === 200 && res.data && res.data.song.audioUrl) {
+          song.audioUrl = res.data.song.audioUrl
         }
-        // 重新获取更新后的 url
-        url = fullSong.audioUrl
       }
 
-      currentSong = songIndex !== -1 ? store.playlist[songIndex] : null
-
-      // 缓存播放链接
-      if (url && currentSong) {
-        currentSong.audioUrl = url
-      }
+      // 更新 index 和 store 信息
+      store.index = songIndex
+      store.title = song.title || ''
+      store.artist = song.artist || ''
+      store.coverUrl = song.coverUrl || ''
+      store.currentTime = 0
+      store.duration = song.duration || 0
     } else {
-      // 本地歌曲：直接用 audioUrl
-      url = currentSong?.audioUrl ?? null
+      // 不在 playlist：获取完整歌曲信息
+      const { getSongUnified } = useGetSongUnified()
+      const res = await getSongUnified(songId)
+
+      if (res.code !== 200 || !res.data) {
+        popup.message.warning(res.message || '获取歌曲信息失败')
+        return
+      }
+
+      const song = res.data.song as unknown as Song
+      store.playlist.push(song)
+      songIndex = store.playlist.length - 1
+
+      // 更新 index 和 store 信息
+      store.index = songIndex
+      store.title = song.title || ''
+      store.artist = song.artist || ''
+      store.coverUrl = song.coverUrl || ''
+      store.currentTime = 0
+      store.duration = song.duration || 0
     }
 
-    // 4. 更新 index
-    store.index = songIndex
-
-    // 5. 无链接则提示
-    if (!url) {
-      popup.message.warning('该歌曲暂无可用音频')
-      return
-    }
-
-    // 6. 加载并播放
+    // 2. 加载并播放
     load()
     play()
   }
@@ -222,23 +209,46 @@ export function useAudio() {
   }
 
   // 添加歌曲到下一首并立即播放
-  const addNextAndPlay = async (id: number | string) => {
-    const { fetchSong } = useGetSong()
-    const res = await fetchSong({ id: Number(id) })
-    if (res?.code === 200 && res?.data) {
-      const song = res.data as unknown as Song
-      store.playlist.splice(store.index + 1, 0, song)
-      await loadById(id)
+  const addNextAndPlay = async (id: number | string, meta?: ThirdpartyMeta) => {
+    const songId = String(id)
+
+    // 检查是否已在 playlist
+    const existingIndex = store.playlist.findIndex((s) => String(s.id) === songId)
+
+    if (existingIndex !== -1) {
+      // 已在 playlist：切换到该位置并播放
+      store.index = existingIndex
+      await loadById(songId)
+    } else {
+      // 不在 playlist：添加到下一首并播放
+      const { getSongUnified } = useGetSongUnified()
+      const res = await getSongUnified(songId, meta)
+
+      if (res.code === 200 && res.data) {
+        store.playlist.splice(store.index + 1, 0, res.data.song as unknown as Song)
+        store.index = store.index + 1
+        await loadById(songId)
+      } else {
+        popup.message.warning(res.message || '添加歌曲失败')
+      }
     }
   }
 
   // 添加歌曲到下一首（不立即播放）
-  const addNext = async (id: number | string) => {
-    const { fetchSong } = useGetSong()
-    const res = await fetchSong({ id: Number(id) })
-    if (res?.code === 200 && res?.data) {
-      const song = res.data as unknown as Song
-      store.playlist.splice(store.index + 1, 0, song)
+  const addNext = async (id: number | string, meta?: ThirdpartyMeta) => {
+    const songId = String(id)
+
+    // 检查是否已在 playlist
+    if (store.playlist.some((s) => String(s.id) === songId)) {
+      return
+    }
+
+    // 获取歌曲信息
+    const { getSongUnified } = useGetSongUnified()
+    const res = await getSongUnified(songId, meta)
+
+    if (res.code === 200 && res.data) {
+      store.playlist.splice(store.index + 1, 0, res.data.song as unknown as Song)
     }
   }
 
@@ -253,13 +263,13 @@ export function useAudio() {
   }
 
   // 通过 id 数组添加歌曲到末尾
-  const addSongsByIds = async (ids: number[]) => {
-    const { fetchSong } = useGetSong()
-    const promises = ids.map((id) => fetchSong({ id }))
+  const addSongsByIds = async (ids: (number | string)[]) => {
+    const { getSongUnified } = useGetSongUnified()
+    const promises = ids.map((id) => getSongUnified(String(id)))
     const results = await Promise.all(promises)
     const songs = results
-      .filter((r) => r?.code === 200 && r?.data)
-      .map((r) => r!.data as unknown as Song)
+      .filter((r) => r.code === 200 && r.data)
+      .map((r) => r.data!.song as unknown as Song)
     store.playlist.push(...songs)
   }
 
