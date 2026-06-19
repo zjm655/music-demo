@@ -82,6 +82,7 @@ watch(() => route.query.keyword, (newKeyword) => {
           :mv-url="song.mvUrl ?? null"
           :mv-description="song.mvDescription ?? null"
           :mv-author="song.mvAuthor ?? null"
+          :vid="song.vid ?? null"
           :category="song.category ?? null"
           :category-id="song.categoryId ?? null"
           :create-time="null"

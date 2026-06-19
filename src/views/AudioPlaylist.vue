@@ -21,6 +21,8 @@ const header = ['#', '标题', '歌手', '作曲', '作词', '', '时长']
         :lyricist="song.lyricist"
         :composer="song.composer"
         :duration="song.duration"
+        :mv-url="song.mvUrl"
+        :vid="song.vid"
         :active="index === audioStore.index"
         :index="index + 1"
       />

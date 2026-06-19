@@ -11,6 +11,7 @@ export interface UnifiedSong {
   duration: number | null
   coverUrl: string | null
   audioUrl: string | null
+  mvUrl: string | null
   lyrics: string | null
   source: 'local' | 'tencent'
   vid: string | null
@@ -61,6 +62,7 @@ export const useGetSongUnified = () => {
         duration: detail.duration,
         coverUrl: detail.coverUrl,
         audioUrl: detail.audioUrl,
+        mvUrl: detail.mvUrl,
         lyrics: detail.lyrics,
         source: 'local',
         vid: null,
@@ -86,6 +88,7 @@ export const useGetSongUnified = () => {
       duration: meta?.duration ?? null,
       coverUrl: meta?.coverUrl ?? null,
       audioUrl: playUrlRes.data,
+      mvUrl: null,
       lyrics: lyricRes.data?.lrc ?? null,
       source: 'tencent',
       vid: meta?.vid ?? null,

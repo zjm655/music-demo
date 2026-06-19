@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { MoreFilled } from '@element-plus/icons-vue'
+import { VideoCamera } from '@element-plus/icons-vue'
 import { useAudio } from '@/hooks/media'
+import { useRouter } from 'vue-router'
 
 interface Props {
   id: number | string
@@ -9,6 +11,8 @@ interface Props {
   lyricist?: string | null
   composer?: string | null
   duration?: number | null
+  mvUrl?: string | null
+  vid?: string | null
   active?: boolean
   index?: number
 }
@@ -19,11 +23,21 @@ const props = withDefaults(defineProps<Props>(), {
   lyricist: null,
   composer: null,
   duration: null,
+  mvUrl: null,
+  vid: null,
   active: false,
   index: undefined,
 })
 
 const audio = useAudio()
+const router = useRouter()
+
+function handleMvClick(e: Event) {
+  e.stopPropagation()
+  const query: Record<string, string> = { id: String(props.id) }
+  if (props.vid) query.vid = props.vid
+  router.push({ path: '/video', query })
+}
 
 function formatDuration(seconds: number | null): string {
   if (typeof seconds !== 'number' || seconds <= 0) return '--:--'
@@ -49,6 +63,15 @@ function formatDuration(seconds: number | null): string {
     <el-icon class="audio-song__action" :size="16" @click.stop>
       <MoreFilled />
     </el-icon>
+    <button
+      v-if="props.mvUrl || props.vid"
+      class="audio-song__mv"
+      title="播放 MV"
+      @click="handleMvClick"
+    >
+      <el-icon :size="12"><VideoCamera /></el-icon>
+      <span>MV</span>
+    </button>
     <span class="audio-song__duration">{{ formatDuration(props.duration) }}</span>
   </div>
 </template>
@@ -150,6 +173,27 @@ function formatDuration(seconds: number | null): string {
 
 .audio-song__action:hover {
   color: var(--color-primary, #8b5cf6);
+}
+
+/* MV 标识 */
+.audio-song__mv {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 1px 5px;
+  border: none;
+  border-radius: var(--radius-xs, 3px);
+  background: rgba(0, 0, 0, 0.5);
+  color: #fbbf24;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background var(--transition-fast, 0.15s);
+}
+
+.audio-song__mv:hover {
+  background: rgba(0, 0, 0, 0.75);
 }
 
 /* 时长 */

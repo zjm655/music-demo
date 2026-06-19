@@ -1,28 +1,34 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router'
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, nextTick } from 'vue'
 import VideoPlayer from '@/components/MediaPlayer/VideoPlayer.vue'
-import { useGetSong } from '@/hooks/song'
+import { useGetSongUnified } from '@/hooks/common'
+import { useGetMvUrl } from '@/hooks/thirdparty'
+import type { UnifiedSong } from '@/hooks/common'
 import { popup } from '@/utils/popup'
-import type { SongItem } from '@/api/song'
 
 const route = useRoute()
 const router = useRouter()
-const { fetchSong } = useGetSong()
+const { getSongUnified } = useGetSongUnified()
+const { fetchMvUrl } = useGetMvUrl()
 
 // VideoPlayer 组件引用
 const videoPlayerRef = ref<InstanceType<typeof VideoPlayer> | null>(null)
 
 // 歌曲详情
-const song = ref<SongItem | null>(null)
+const song = ref<UnifiedSong | null>(null)
 // 加载状态
 const isLoading = ref(true)
 // 错误信息
 const error = ref('')
+const mvSrc = ref('')
+// 第三方 MV 是页面，用 iframe 嵌入；本地 MV 是视频资源，用 VideoPlayer
+const isIframe = ref(false)
 
 // 获取歌曲详情
 async function loadSong() {
   const id = route.query.id
+  const vid = route.query.vid as string | undefined
   if (!id) {
     error.value = '缺少歌曲 ID 参数'
     isLoading.value = false
@@ -33,24 +39,43 @@ async function loadSong() {
   isLoading.value = true
   error.value = ''
 
-  const res = await fetchSong({ id: Number(id) })
+  const res = await getSongUnified(String(id))
 
-  if (res?.code === 200 && res?.data) {
-    song.value = res.data
-    // 如果没有 MV 地址，提示用户
-    if (!song.value.mvUrl) {
+  if (res.code === 200 && res.data) {
+    song.value = res.data.song
+
+    // 尝试获取 MV 地址
+    let mvUrl = song.value.mvUrl
+
+    // 第三方歌曲：通过 vid 获取 MV 链接（优先用路由传来的 vid）
+    if (!mvUrl && (vid || song.value.vid)) {
+      const mvRes = await fetchMvUrl({ vid: vid || song.value.vid! })
+      if (mvRes?.code === 200 && mvRes?.data) {
+        mvUrl = mvRes.data
+      }
+    }
+
+    if (!mvUrl) {
       error.value = '该歌曲暂无 MV'
       popup.message.warning('该歌曲暂无 MV')
     } else {
-      // 加载 MV
-      videoPlayerRef.value?.load(song.value.mvUrl)
+      mvSrc.value = mvUrl
+      // 第三方 MV 是页面，本地是视频资源
+      isIframe.value = song.value.source === 'tencent'
     }
   } else {
-    error.value = res?.message || '获取歌曲详情失败'
+    error.value = res.message || '获取歌曲详情失败'
     popup.message.error('资源加载失败，请稍后重试')
   }
 
   isLoading.value = false
+  // 本地 MV：等 VideoPlayer 渲染后加载
+  if (!isIframe.value) {
+    await nextTick()
+    if (mvSrc.value) {
+      videoPlayerRef.value?.load(mvSrc.value)
+    }
+  }
 }
 
 // 返回上一页
@@ -101,18 +126,26 @@ onMounted(() => {
     </div>
 
     <!-- 视频播放器 -->
-    <div v-else-if="song?.mvUrl" class="mv-video__player">
-      <VideoPlayer ref="videoPlayerRef" />
+    <div v-else-if="!error" class="mv-video__player">
+      <!-- 第三方 MV：iframe 嵌入 QQ 音乐页面 -->
+      <iframe
+        v-if="isIframe"
+        :src="mvSrc"
+        class="mv-video__iframe"
+        allowfullscreen
+        allow="autoplay; fullscreen"
+      />
+      <!-- 本地 MV：VideoPlayer -->
+      <VideoPlayer v-else ref="videoPlayerRef" />
     </div>
 
     <!-- 歌曲信息 -->
     <div v-if="song && !error" class="mv-video__info">
       <h1 class="mv-video__title">{{ song.title }}</h1>
       <p class="mv-video__author">
-        <span class="mv-video__author-label">MV 作者：</span>
-        {{ song.mvAuthor ?? '未知作者' }}
+        <span class="mv-video__author-label">歌手：</span>
+        {{ song.artist ?? '未知' }}
       </p>
-      <p v-if="song.mvDescription" class="mv-video__desc">{{ song.mvDescription }}</p>
     </div>
   </div>
 </template>
@@ -239,6 +272,12 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.mv-video__iframe {
+  width: 100%;
+  height: 100vh;
+  border: none;
 }
 
 /* 歌曲信息 - 改为底部固定 */

@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { useAudio } from '@/hooks/media'
+import { VideoCamera } from '@element-plus/icons-vue'
+import { useRouter } from 'vue-router'
 
 interface Props {
   id: number | string
@@ -13,6 +15,7 @@ interface Props {
   mvUrl: string | null
   mvDescription: string | null
   mvAuthor: string | null
+  vid?: string | null
   category: string | null
   coverUrl: string | null
   createTime: string | null
@@ -29,6 +32,7 @@ const props = withDefaults(defineProps<Props>(), {
   audioUrl: '',
   category: '未分类',
   active: false,
+  vid: null,
 })
 
 const emit = defineEmits<{
@@ -36,9 +40,17 @@ const emit = defineEmits<{
 }>()
 
 const audio = useAudio()
+const router = useRouter()
 
 function handleCardClick() {
   emit('click', props.id)
+}
+
+function handleMvClick(e: Event) {
+  e.stopPropagation()
+  const query: Record<string, string> = { id: String(props.id) }
+  if (props.vid) query.vid = props.vid
+  router.push({ path: '/video', query })
 }
 
 function handleAddNext(e: Event) {
@@ -76,6 +88,16 @@ function handleAddNext(e: Event) {
         >{{ props.artist || props.lyricist || props.composer || props.mvAuthor }}</span
       >
     </div>
+
+    <button
+      v-if="props.mvUrl || props.vid"
+      class="song-mv-badge"
+      title="播放 MV"
+      @click="handleMvClick"
+    >
+      <el-icon :size="12"><VideoCamera /></el-icon>
+      <span>MV</span>
+    </button>
 
     <button class="add-next-btn" @click="handleAddNext" title="添加到下一首">
       <span class="add-next-icon"></span>
@@ -199,6 +221,27 @@ function handleAddNext(e: Event) {
   border-width: 5px 0 5px 8px;
   border-color: transparent transparent transparent #333;
   margin-left: 2px;
+}
+
+.song-mv-badge {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 1px 5px;
+  border: none;
+  border-radius: var(--radius-xs, 3px);
+  background: rgba(0, 0, 0, 0.08);
+  color: #d97706;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background var(--transition-fast, 0.15s);
+}
+
+.song-mv-badge:hover {
+  background: rgba(0, 0, 0, 0.15);
+  color: #b45309;
 }
 
 .song-info {
