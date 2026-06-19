@@ -8,7 +8,7 @@ import { useGetUserProfile } from './hooks/user'
 import { computed, onMounted } from 'vue'
 
 const appStyle = computed(() => ({
-  backgroundImage: `url(${useThemeStore().currentBackground})`,
+  backgroundImage: `url(${useThemeStore().currentBackground}) `,
 }))
 
 // 启动时验证 token 并获取用户信息

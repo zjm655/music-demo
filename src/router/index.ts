@@ -10,11 +10,11 @@ const router = createRouter({
     ...homeRouter,
     ...playlistRouter,
     { path: '/:pathMatch(.*)*', redirect: '/home' },
-  ],
+  ] ,
 })
 
-router.beforeEach((to, _from) => {
-  const token = localStorage.getItem('token')
+router.beforeEach((to, _from) =>   {
+  const token = localStorage.getItem('token' )
   if (!token && to.meta.requireAuth) {
     return '/login'
   }

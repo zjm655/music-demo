@@ -19,9 +19,16 @@ const drawer = ref(false)
     <h1 class="music-header__brand">音乐平台</h1>
     <nav class="music-header__nav">
       <router-link to="/home" active-class="music-header__link--active">首页</router-link>
-      <router-link to="/playlist/audio" active-class="music-header__link--active">播放列表</router-link>
-      <router-link to="/playlist/search" active-class="music-header__link--active">搜索</router-link>
-      <router-link to="/" active-class="music-header__link--active" v-if="useUserStore().isLogin"
+      <router-link to="/playlist/audio" active-class="music-header__link--active"
+        >播放列表</router-link
+      >
+      <router-link to="/playlist/search" active-class="music-header__link--active"
+        >搜索</router-link
+      >
+      <router-link
+        :to="{ name: 'MyPlaylists' }"
+        active-class="music-header__link--active"
+        v-if="useUserStore().isLogin"
         >我的歌单</router-link
       >
     </nav>
@@ -94,11 +101,18 @@ const drawer = ref(false)
         <router-link to="/user-center" active-class="music-header__link--active" v-else
           >个人中心</router-link
         >
-        <router-link to="/playlist/audio" active-class="music-header__link--active">播放列表</router-link>
-        <router-link to="/playlist/search" active-class="music-header__link--active">搜索</router-link>
+        <router-link to="/playlist/audio" active-class="music-header__link--active"
+          >播放列表</router-link
+        >
+        <router-link to="/playlist/search" active-class="music-header__link--active"
+          >搜索</router-link
+        >
         <!-- <router-link to="/" active-class="music-header__link--active">音乐排行</router-link> -->
         <!-- <router-link to="/" active-class="music-header__link--active">推荐歌单</router-link> -->
-        <router-link to="/" active-class="music-header__link--active" v-if="useUserStore().isLogin"
+        <router-link
+          :to="{ name: 'MyPlaylists' }"
+          active-class="music-header__link--active"
+          v-if="useUserStore().isLogin"
           >我的歌单</router-link
         >
         <el-switch

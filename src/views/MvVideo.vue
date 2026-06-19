@@ -312,7 +312,7 @@ onMounted(() => {
 
 .mv-video__desc {
   margin: 0;
-  font-size: var(--font-size-xs);
+  font-size: var(--font-size-xs ) ;
   color: rgba(255, 255, 255, 0.4);
   display: -webkit-box;
   -webkit-line-clamp: 2;

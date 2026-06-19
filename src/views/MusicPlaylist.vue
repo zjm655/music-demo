@@ -19,13 +19,8 @@ import RightLyric from '@/components/MusicPlaylist/RightLyric.vue'
   height: 87vh;
   padding: calc(50px - 4vh);
   background: var(--gradient-glass);
-  backdrop-filter: blur(0.1px);
-  -webkit-backdrop-filter: blur(0.1px);
-  /* border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
-  border: 1px solid var(--color-border-soft); */
-      width: 100vw;
-    margin: 0 auto;
+  width: 100vw;
+  margin: 0 auto;
 }
 .music-playlist-main__left {
   flex: 1;
