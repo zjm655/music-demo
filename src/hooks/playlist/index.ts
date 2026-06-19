@@ -13,6 +13,11 @@ export type { OperatePlaylistSongPayload, OperatePlaylistSongResPayload } from '
 export { useAddExternalSong } from './useAddExternalSong'
 export type { AddExternalSongPayload, AddExternalSongResPayload } from './useAddExternalSong'
 
+export { useRemoveExternalSong } from './useRemoveExternalSong'
+export type { RemoveExternalSongPayload, RemoveExternalSongResPayload } from './useRemoveExternalSong'
+
+export { useRemovePlaylistSong } from './useRemovePlaylistSong'
+
 export { useDeletePlaylist } from './useDeletePlaylist'
 export type { DeletePlaylistPayload, DeletePlaylistResPayload } from './useDeletePlaylist'
 
