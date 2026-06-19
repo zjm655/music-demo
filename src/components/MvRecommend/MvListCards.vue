@@ -3,16 +3,77 @@ import MvCard from './MvCard.vue'
 import PlaylistNav from '@/components/PlaylistHot/PlaylistNav.vue'
 import PlaylistDots from '@/components/PlaylistHot/PlaylistDots.vue'
 import { useCarousel } from '@/hooks/useCarousel'
-import { ref, reactive } from 'vue'
+import { paginate } from '@/utils/paginate'
+import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { useGetSongs, type GetSongsPayload } from '@/hooks/song'
+import { useGetCategories } from '@/hooks/category'
+import type { CategoryItem } from '@/hooks/category'
+import type { SongItem } from '@/api/song'
+
+const router = useRouter()
 
 const activeTab = ref(0)
-const mvTab = ['最新', '内地', '港台', '欧美', '韩国', '日本']
-const pages = reactive([1, 2, 3, 4, 5, 6])
+const { fetchCategories } = useGetCategories()
+const categories = ref<CategoryItem[]>([])
+// 动态标签：全部 + 后端返回的分类名称
+const mvTab = computed(() => ['全部', ...categories.value.map((c) => c.name)])
 
-const { currentPage, listsRef, listsStyle, prevPage, nextPage, goToPage, onTouchStart, onTouchMove, onTouchEnd } = useCarousel({ totalPages: pages.length })
+// 有 MV 的歌曲列表
+const mvPlaylist = ref<SongItem[]>([])
 
+// 分页：每页 6 个 MV
+const pages = computed(() => paginate(mvPlaylist.value, 6))
+
+const {
+  currentPage,
+  listsRef,
+  listsStyle,
+  prevPage,
+  nextPage,
+  goToPage,
+  onTouchStart,
+  onTouchMove,
+  onTouchEnd,
+} = useCarousel({ totalPages: computed(() => pages.value.length) })
+
+// 获取有 MV 的歌曲列表
+async function getSongs(payload: GetSongsPayload) {
+  const request = useGetSongs()
+  const res = await request.fetchSongs(payload)
+  if (res?.code === 200 && res?.data) {
+    // 过滤出有 mvUrl 的歌曲
+    mvPlaylist.value = res.data.list.filter((song) => song.mvUrl != null)
+  }
+}
+
+// 切换 tab
 function switchTab(index: number) {
   activeTab.value = index
+  // 根据 index 获取 categoryId：index=0 为全部，index>0 对应 categories[index-1]
+  const categoryId = index === 0 ? undefined : categories.value[index - 1]?.id
+  getSongs({
+    page: 1,
+    pageSize: 54,
+    type: 'song',
+    categoryId,
+  })
+}
+
+// 组件挂载时获取分类列表和 MV 列表
+onMounted(async () => {
+  // 获取分类列表
+  const catRes = await fetchCategories()
+  if (catRes?.code === 200 && catRes?.data) {
+    categories.value = catRes.data
+  }
+  // 获取 MV 列表（全部）
+  switchTab(0)
+})
+
+// 跳转到 MV 播放页
+function goToMvVideo(id: number) {
+  router.push({ path: '/video', query: { id: String(id) } })
 }
 </script>
 
@@ -43,25 +104,29 @@ function switchTab(index: number) {
       >
         <div class="mv-recommend__page" v-for="(page, index) in pages" :key="index">
           <div class="mv-recommend__row">
-            <div class="mv-recommend__card">
-              <mv-card />
-            </div>
-            <div class="mv-recommend__card">
-              <mv-card name="退潮" artist="南征北战NZBZ" :play-count="7281" />
-            </div>
-            <div class="mv-recommend__card">
-              <mv-card name="I Knew It, I Knew You" artist="Taylor Swift" :play-count="65000" />
+            <div class="mv-recommend__card" v-for="song in page.slice(0, 3)" :key="song.id">
+              <mv-card
+                :mv-description="song.mvDescription"
+                :mv-author="song.mvAuthor"
+                :cover-url="song.coverUrl"
+                :mv-url="song.mvUrl"
+                :duration="song.duration"
+                :song-id="song.id"
+                @click="goToMvVideo"
+              />
             </div>
           </div>
-          <div class="mv-recommend__row">
-            <div class="mv-recommend__card">
-              <mv-card name="BIRTHDAY" artist="Faouzia" :play-count="5869" />
-            </div>
-            <div class="mv-recommend__card">
-              <mv-card name="粉钻" artist="戚薇" :play-count="14000" />
-            </div>
-            <div class="mv-recommend__card">
-              <mv-card name="常常因为夕阳好美而得救" artist="蒋敦豪" :play-count="18000" />
+          <div class="mv-recommend__row" v-if="page.length > 3">
+            <div class="mv-recommend__card" v-for="song in page.slice(3, 6)" :key="song.id">
+              <mv-card
+                :mv-description="song.mvDescription"
+                :mv-author="song.mvAuthor"
+                :cover-url="song.coverUrl"
+                :mv-url="song.mvUrl"
+                :duration="song.duration"
+                :song-id="song.id"
+                @click="goToMvVideo"
+              />
             </div>
           </div>
         </div>

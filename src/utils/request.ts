@@ -114,12 +114,6 @@ const json = {
   },
 }
 
-const file = {
-  upload: () => {},
-
-  download: () => {},
-}
 export const request = {
   json,
-  // file,
 }

@@ -1,9 +1,7 @@
-import component from 'element-plus/es/components/tree-select/src/tree-select-option.mjs'
-
 export const homeRouter = [
   {
     path: '/home',
-    name: 'MyHome',
+    name: 'MusicHome',
     component: () => import('@/views/MusicHome.vue'),
   },
   {
@@ -17,6 +15,18 @@ export const homeRouter = [
   {
     path: '/user-center',
     name: 'UserCenter',
+    meta:{
+      requireAuth:true,
+      hideAudio:true
+    },
     component: () => import('@/views/UserCenter.vue'),
+  },
+  {
+    path: '/video',
+    name: 'MvVideo',
+    component: () => import('@/views/MvVideo.vue'),
+    meta: {
+      hideAudio: true,
+    },
   },
 ]

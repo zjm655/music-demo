@@ -1,5 +1,7 @@
 import { Howl } from 'howler'
 import { useAudioStore, type Song } from '@/stores/audio'
+import { useGetSongUnified, type ThirdpartyMeta } from '@/hooks/common'
+import { popup } from '@/utils/popup'
 import { logger } from '@/utils/logger'
 import { ref } from 'vue'
 
@@ -32,7 +34,7 @@ export function useAudio() {
     rafId = requestAnimationFrame(update)
   }
 
-  // 加载音频
+  // 加载音频（依赖 store.currentSrc）
   const load = () => {
     if (sound) {
       sound.unload()
@@ -47,8 +49,6 @@ export function useAudio() {
       store.currentTime = 0
       store.duration = 0
     }
-
-    // 更新播放状态
 
     if (!store.currentSrc) {
       logger.warn('音频资源加载失败！')
@@ -90,6 +90,73 @@ export function useAudio() {
     })
   }
 
+  // 通过 id 加载并播放
+  // - 已在 playlist：直接用已有信息（audioUrl 缺失时才请求）
+  // - 不在 playlist：调用 useGetSongUnified 获取完整信息
+  const loadById = async (id?: number | string) => {
+    const targetId = id ?? store.currentSong?.id
+    if (targetId == null) {
+      popup.message.warning('请先选择歌曲')
+      return
+    }
+
+    const songId = String(targetId)
+
+    // 1. 查找歌曲是否已在 playlist
+    let songIndex = store.playlist.findIndex((s) => String(s.id) === songId)
+
+    if (songIndex !== -1) {
+      // 已在 playlist：直接用已有信息，只补缺失的 audioUrl
+      const song = store.playlist[songIndex]
+      if (!song) {
+        popup.message.warning('歌曲信息异常')
+        return
+      }
+
+      // 第三方歌曲可能没有 audioUrl，需要请求播放链接
+      if (!song.audioUrl) {
+        const { getSongUnified } = useGetSongUnified()
+        const res = await getSongUnified(songId)
+        if (res.code === 200 && res.data && res.data.song.audioUrl) {
+          song.audioUrl = res.data.song.audioUrl
+        }
+      }
+
+      // 更新 index 和 store 信息
+      store.index = songIndex
+      store.title = song.title || ''
+      store.artist = song.artist || ''
+      store.coverUrl = song.coverUrl || ''
+      store.currentTime = 0
+      store.duration = song.duration || 0
+    } else {
+      // 不在 playlist：获取完整歌曲信息
+      const { getSongUnified } = useGetSongUnified()
+      const res = await getSongUnified(songId)
+
+      if (res.code !== 200 || !res.data) {
+        popup.message.warning(res.message || '获取歌曲信息失败')
+        return
+      }
+
+      const song = res.data.song as unknown as Song
+      store.playlist.push(song)
+      songIndex = store.playlist.length - 1
+
+      // 更新 index 和 store 信息
+      store.index = songIndex
+      store.title = song.title || ''
+      store.artist = song.artist || ''
+      store.coverUrl = song.coverUrl || ''
+      store.currentTime = 0
+      store.duration = song.duration || 0
+    }
+
+    // 2. 加载并播放
+    load()
+    play()
+  }
+
   const setPlatlist = (playlist: Song[], index: number) => {
     store.playlist = playlist
     store.index = index
@@ -104,35 +171,110 @@ export function useAudio() {
   }
 
   const retry = ref(0)
+
   // 下一首
-  const nextSong = () => {
-    store.index = (1 + store.index) % store.playlist.length
-    if (retry.value >= store.playlist.length) {
-      unload()
-      return
-    }
-    if (!store.currentSrc) {
+  const nextSong = async () => {
+    if (store.playlist.length === 0) return
+    const nextIndex = (store.index + 1) % store.playlist.length
+    const nextId = store.playlist[nextIndex]?.id
+    if (nextId == null) {
       retry.value += 1
+      if (retry.value >= store.playlist.length) {
+        unload()
+        return
+      }
+      store.index = nextIndex
       return nextSong()
     }
-    load()
-    play()
     retry.value = 0
+    await loadById(nextId)
   }
 
-  const prevSong = () => {
-    store.index = (store.index - 1 + store.playlist.length) % store.playlist.length
-    if (retry.value >= store.playlist.length) {
-      unload()
-      return
-    }
-    if (!store.currentSrc) {
+  // 上一首
+  const prevSong = async () => {
+    if (store.playlist.length === 0) return
+    const prevIndex = (store.index - 1 + store.playlist.length) % store.playlist.length
+    const prevId = store.playlist[prevIndex]?.id
+    if (prevId == null) {
       retry.value += 1
+      if (retry.value >= store.playlist.length) {
+        unload()
+        return
+      }
+      store.index = prevIndex
       return prevSong()
     }
-    load()
-    play()
     retry.value = 0
+    await loadById(prevId)
+  }
+
+  // 添加歌曲到下一首并立即播放
+  const addNextAndPlay = async (id: number | string, meta?: ThirdpartyMeta) => {
+    const songId = String(id)
+
+    // 检查是否已在 playlist
+    const existingIndex = store.playlist.findIndex((s) => String(s.id) === songId)
+
+    if (existingIndex !== -1) {
+      // 已在 playlist：切换到该位置并播放
+      store.index = existingIndex
+      await loadById(songId)
+    } else {
+      // 不在 playlist：添加到下一首并播放
+      const { getSongUnified } = useGetSongUnified()
+      const res = await getSongUnified(songId, meta)
+
+      if (res.code === 200 && res.data) {
+        store.playlist.splice(store.index + 1, 0, res.data.song as unknown as Song)
+        store.index = store.index + 1
+        await loadById(songId)
+      } else {
+        popup.message.warning(res.message || '添加歌曲失败')
+      }
+    }
+  }
+
+  // 添加歌曲到下一首（不立即播放）
+  const addNext = async (id: number | string, meta?: ThirdpartyMeta) => {
+    const songId = String(id)
+
+    // 检查是否已在 playlist
+    if (store.playlist.some((s) => String(s.id) === songId)) {
+      popup.message.warning('歌曲已在播放列表中')
+      return
+    }
+
+    // 获取歌曲信息
+    const { getSongUnified } = useGetSongUnified()
+    const res = await getSongUnified(songId, meta)
+
+    if (res.code === 200 && res.data) {
+      store.playlist.splice(store.index + 1, 0, res.data.song as unknown as Song)
+      popup.message.success('已添加到下一首播放')
+    } else {
+      popup.message.error(res.message || '添加歌曲失败')
+    }
+  }
+
+  // 添加歌曲到下一首（已有歌曲对象）
+  const addSongNext = (song: Song) => {
+    store.playlist.splice(store.index + 1, 0, song)
+  }
+
+  // 添加歌曲数组到末尾
+  const addSongsToEnd = (songs: Song[]) => {
+    store.playlist.push(...songs)
+  }
+
+  // 通过 id 数组添加歌曲到末尾
+  const addSongsByIds = async (ids: (number | string)[]) => {
+    const { getSongUnified } = useGetSongUnified()
+    const promises = ids.map((id) => getSongUnified(String(id)))
+    const results = await Promise.all(promises)
+    const songs = results
+      .filter((r) => r.code === 200 && r.data)
+      .map((r) => r.data!.song as unknown as Song)
+    store.playlist.push(...songs)
   }
 
   // 暂停
@@ -146,7 +288,11 @@ export function useAudio() {
 
   // 切换暂停于播放
   const toggle = () => {
-    store.isPlaying ? pause() : play()
+    if (store.isPlaying) {
+      pause()
+    } else {
+      play()
+    }
   }
 
   // 手动切换播放进度
@@ -193,6 +339,7 @@ export function useAudio() {
 
   return {
     load,
+    loadById,
     play,
     pause,
     toggle,
@@ -204,5 +351,10 @@ export function useAudio() {
     setPlatlist,
     nextSong,
     prevSong,
+    addSongNext,
+    addNext,
+    addNextAndPlay,
+    addSongsToEnd,
+    addSongsByIds,
   }
 }
