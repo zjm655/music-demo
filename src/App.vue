@@ -3,10 +3,27 @@ import MusicHeader from '@/components/App/MusicHeader.vue'
 import AudioPlayer from './components/MediaPlayer/AudioPlayer.vue'
 import { useAudioStore } from './stores/audio'
 import { useThemeStore } from './stores/theme'
-import { computed } from 'vue'
+import { useUserStore } from './stores/user'
+import { useGetUserProfile } from './hooks/user'
+import { computed, onMounted } from 'vue'
+
 const appStyle = computed(() => ({
-  backgroundImage: `url(${useThemeStore().currentBackground})`,
+  backgroundImage: `url(${useThemeStore().currentBackground}) `,
 }))
+
+// 启动时验证 token 并获取用户信息
+onMounted(async () => {
+  if (localStorage.getItem('token')) {
+    const { fetchUserProfile } = useGetUserProfile()
+    const res = await fetchUserProfile()
+    if (res?.code === 200 && res.data) {
+      const userStore = useUserStore()
+      userStore.loadUserInfo(res.data)
+      userStore.isLogin = true
+    }
+    // 失败静默处理，不弹提示
+  }
+})
 </script>
 
 <template>

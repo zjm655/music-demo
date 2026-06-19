@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { homeRouter } from './modules/home'
+import { playlistRouter } from './modules/playlist'
 import { useAudioStore } from '@/stores/audio'
 
 const router = createRouter({
@@ -7,12 +8,13 @@ const router = createRouter({
   routes: [
     { path: '/', redirect: '/home' },
     ...homeRouter,
+    ...playlistRouter,
     { path: '/:pathMatch(.*)*', redirect: '/home' },
-  ],
+  ] ,
 })
 
-router.beforeEach((to, _from) => {
-  const token = localStorage.getItem('token')
+router.beforeEach((to, _from) =>   {
+  const token = localStorage.getItem('token' )
   if (!token && to.meta.requireAuth) {
     return '/login'
   }

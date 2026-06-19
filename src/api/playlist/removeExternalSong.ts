@@ -6,27 +6,19 @@ export let abort: null | AbortController = null
 export interface Payload {
   playlistId: number
   songId: string
-  source?: string
-  name?: string
-  artist?: string
-  cover?: string
+  source: string
 }
 
-// 添加外部歌曲到歌单响应 data
 export interface ResPayload {
   success: boolean
 }
 
-export function addExternalSong(payload: Payload): Promise<CommonResCfg<ResPayload>> {
-  // playlistId 仅用于替换路径占位符，不放入请求体
+export function removeExternalSong(payload: Payload): Promise<CommonResCfg<ResPayload>> {
   const url = playlistExternalSongsPath.replace('{id}', String(payload.playlistId))
-  const res = request.json.post<ResPayload>(url, {
-    data: {
+  const res = request.json.delete<ResPayload>(url, {
+    params: {
       songId: payload.songId,
       source: payload.source,
-      name: payload.name,
-      artist: payload.artist,
-      cover: payload.cover,
     },
   })
   abort = res.controller

@@ -13,5 +13,8 @@ export type { Payload as OperatePlaylistSongPayload, ResPayload as OperatePlayli
 export { addExternalSong, abort as addExternalSongAbort } from './addExternalSong'
 export type { Payload as AddExternalSongPayload, ResPayload as AddExternalSongResPayload } from './addExternalSong'
 
+export { removeExternalSong, abort as removeExternalSongAbort } from './removeExternalSong'
+export type { Payload as RemoveExternalSongPayload, ResPayload as RemoveExternalSongResPayload } from './removeExternalSong'
+
 export { deletePlaylist, abort as deletePlaylistAbort } from './deletePlaylist'
 export type { Payload as DeletePlaylistPayload, ResPayload as DeletePlaylistResPayload } from './deletePlaylist'

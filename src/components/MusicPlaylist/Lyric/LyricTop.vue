@@ -1,14 +1,26 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { computed } from 'vue'
+import { useAudioStore } from '@/stores/audio'
+
+const audioStore = useAudioStore()
+
+const coverUrl = computed(() => audioStore.coverUrl || '/music.png')
+const songTitle = computed(() => audioStore.title || 'Your Music Name')
+const statusText = computed(() => {
+  if (!audioStore.currentSong) return '等待播放...'
+  return audioStore.isPlaying ? '正在播放' : '已暂停'
+})
+</script>
 
 <template>
   <div class="lyric-top-main">
-    <div class="lyric-top-main__disc">
+    <div class="lyric-top-main__disc" :class="{ 'lyric-top-main__disc--playing': audioStore.isPlaying }">
       <div class="lyric-top-main__disc-inner">
-        <el-image src="/music.png" class="lyric-top-main__cover" />
+        <el-image :src="coverUrl" class="lyric-top-main__cover" />
       </div>
     </div>
-    <h3 class="lyric-top-main__title">Your Music Name</h3>
-    <p class="lyric-top-main__status">等待播放...</p>
+    <h3 class="lyric-top-main__title">{{ songTitle }}</h3>
+    <p class="lyric-top-main__status">{{ statusText }}</p>
   </div>
 </template>
 

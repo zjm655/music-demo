@@ -41,7 +41,7 @@ defineExpose({
     <video
       ref="video"
       class="video-player__video"
-      :src="currentSrc || '/video/001.mp4'"
+      :src="currentSrc"
       controls
       playsinline
       autoplay

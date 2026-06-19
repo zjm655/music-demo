@@ -16,10 +16,10 @@ const props = withDefaults(
   },
 )
 
-async function openAudio(id: number) {
-  useAudio().setPlatlist(props.songs, Number(id))
-  useAudio().load()
-  useAudio().play()
+const audio = useAudio()
+
+async function openAudio(id: number | string) {
+  await audio.addNextAndPlay(id)
 }
 </script>
 
@@ -31,10 +31,10 @@ async function openAudio(id: number) {
     <!-- 小卡片 -->
     <div class="song-grid">
       <SongCard
-        v-for="(song, index) in props.songs"
+        v-for="song in props.songs"
         :key="song.id"
         v-bind="song"
-        @click="openAudio(index)"
+        @click="openAudio"
       />
     </div>
   </div>
