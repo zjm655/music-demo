@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useAudioStore } from '@/stores/audio'
-import { useAudio } from '@/hooks/media'
 
 const audioStore = useAudioStore()
-const audio = useAudio()
 
 const coverUrl = computed(() => audioStore.coverUrl || '/music.png')
 const songTitle = computed(() => audioStore.title || 'Your Music Name')
