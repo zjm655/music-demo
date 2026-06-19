@@ -178,7 +178,6 @@ async function confirmAddToPlaylist() {
         name: song.title,
         artist: song.artist ?? undefined,
         cover: song.coverUrl ?? undefined,
-        vid: song.vid ?? undefined,
       })
     }
     if (res?.code === 200) successCount++

@@ -13,6 +13,7 @@ interface Props {
   duration?: number | null
   mvUrl?: string | null
   vid?: string | null
+  source?: string
   active?: boolean
   index?: number
 }
@@ -25,6 +26,7 @@ const props = withDefaults(defineProps<Props>(), {
   duration: null,
   mvUrl: null,
   vid: null,
+  source: 'local',
   active: false,
   index: undefined,
 })

@@ -10,7 +10,6 @@ export interface Payload {
   name?: string
   artist?: string
   cover?: string
-  vid?: string
 }
 
 // 添加外部歌曲到歌单响应 data
@@ -28,7 +27,6 @@ export function addExternalSong(payload: Payload): Promise<CommonResCfg<ResPaylo
       name: payload.name,
       artist: payload.artist,
       cover: payload.cover,
-      vid: payload.vid,
     },
   })
   abort = res.controller
