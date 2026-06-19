@@ -93,9 +93,9 @@ export const useSearchUnified = () => {
 
       if (includeThirdParty) {
         promises.push(
-          searchThirdpartySongs({ keyword, limit: pageSize }).then((res) => {
-            if (res?.code === 200 && Array.isArray(res?.data)) {
-              return res.data.map((item: TencentSongDTO): UnifiedSearchResult => ({
+          searchThirdpartySongs({ keyword, page, num: pageSize }).then((res) => {
+            if (res?.code === 200 && res?.data?.list) {
+              return res.data.list.map((item: TencentSongDTO): UnifiedSearchResult => ({
                 id: item.id,
                 title: item.song,
                 artist: item.singer || null,

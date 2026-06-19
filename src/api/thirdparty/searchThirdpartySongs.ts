@@ -17,10 +17,16 @@ export interface TencentSongDTO {
 
 export interface Payload {
   keyword: string
-  limit?: number
+  page?: number
+  num?: number
 }
 
-export type ResPayload = TencentSongDTO[]
+export interface ResPayload {
+  list: TencentSongDTO[]
+  total: number
+  page: number
+  num: number
+}
 
 // 搜索关键词多变，不接入缓存
 export function searchThirdpartySongs(payload: Payload): Promise<CommonResCfg<ResPayload>> {
