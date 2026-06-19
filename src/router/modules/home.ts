@@ -15,6 +15,10 @@ export const homeRouter = [
   {
     path: '/user-center',
     name: 'UserCenter',
+    meta:{
+      requireAuth:true,
+      hideAudio:true
+    },
     component: () => import('@/views/UserCenter.vue'),
   },
   {

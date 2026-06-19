@@ -14,6 +14,11 @@ export const playlistRouter = [
         path: 'search',
         name: 'AudioSearch',
         component: () => import('@/views/AudioSearch.vue')
+      },
+      {
+        path:'songs-list',
+        name:"SongsList",
+        component: () => import('@/views/SongsList.vue')
       }
     ],
   }
