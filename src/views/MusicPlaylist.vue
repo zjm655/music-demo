@@ -28,5 +28,7 @@ import RightLyric from '@/components/MusicPlaylist/RightLyric.vue'
 
 .music-playlist-main__right {
   flex: 0.6;
+  height: 100%;
+  overflow: hidden;
 }
 </style>

@@ -25,5 +25,7 @@ import LyricContent from './Lyric/LyricContent.vue'
 }
 .Lyric-main-bottom {
   flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 </style>
