@@ -1,35 +1,17 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useThemeStore } from '@/stores/theme'
-import { Search } from '@element-plus/icons-vue'
 import { Moon, Sunny, ArrowDown } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
-import { useRouter } from 'vue-router'
 
-const router = useRouter()
 const activeNames = ref(['0'])
 const bgMode = ref(false)
-const keyword = ref('')
 
 function changeBgMode() {
   document.documentElement.classList.toggle('dark')
 }
 
 const drawer = ref(false)
-
-const handleSearch = () => {
-  if (!keyword.value.trim()) return
-  router.push({
-    path: '/playlist/search',
-    query: { keyword: keyword.value }
-  })
-}
-
-const handleKeydown = (e: KeyboardEvent) => {
-  if (e.key === 'Enter') {
-    handleSearch()
-  }
-}
 </script>
 
 <template>
@@ -38,23 +20,11 @@ const handleKeydown = (e: KeyboardEvent) => {
     <nav class="music-header__nav">
       <router-link to="/home" active-class="music-header__link--active">首页</router-link>
       <router-link to="/playlist/audio" active-class="music-header__link--active">播放列表</router-link>
-      <!-- <router-link to="/" active-class="music-header__link--active"></router-link> -->
+      <router-link to="/playlist/search" active-class="music-header__link--active">搜索</router-link>
       <router-link to="/" active-class="music-header__link--active" v-if="useUserStore().isLogin"
         >我的歌单</router-link
       >
     </nav>
-    <div class="music-header__search">
-      <input
-        type="text"
-        class="music-header__input"
-        placeholder="搜索歌曲、歌手"
-        v-model="keyword"
-        @keydown="handleKeydown"
-      />
-      <button class="music-header__btn" @click="handleSearch">
-        <el-icon><Search /></el-icon>
-      </button>
-    </div>
     <nav class="music-header__user">
       <router-link
         to="/user-center"
@@ -125,7 +95,7 @@ const handleKeydown = (e: KeyboardEvent) => {
           >个人中心</router-link
         >
         <router-link to="/playlist/audio" active-class="music-header__link--active">播放列表</router-link>
-
+        <router-link to="/playlist/search" active-class="music-header__link--active">搜索</router-link>
         <!-- <router-link to="/" active-class="music-header__link--active">音乐排行</router-link> -->
         <!-- <router-link to="/" active-class="music-header__link--active">推荐歌单</router-link> -->
         <router-link to="/" active-class="music-header__link--active" v-if="useUserStore().isLogin"
@@ -221,54 +191,6 @@ const handleKeydown = (e: KeyboardEvent) => {
 
 .music-header__link--active {
   color: var(--color-secondary-hover) !important;
-}
-
-/* Search bar */
-.music-header__search {
-  display: flex;
-  align-items: center;
-  gap: var(--space-xs);
-  flex-shrink: 0;
-}
-
-.music-header__input {
-  width: 180px;
-  height: 32px;
-  padding: 0 var(--space-sm);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  background: var(--color-input-bg);
-  color: var(--color-text-primary);
-  font-size: var(--font-size-sm);
-  outline: none;
-  transition:
-    border-color var(--transition-fast),
-    width var(--transition-normal);
-}
-
-.music-header__input:focus {
-  border-color: var(--color-border-focus);
-  width: 220px;
-}
-
-.music-header__input::placeholder {
-  color: var(--color-input-placeholder);
-}
-
-.music-header__btn {
-  height: 32px;
-  padding: 0 var(--space-md);
-  border: none;
-  border-radius: var(--radius-sm);
-  background: var(--gradient-primary);
-  color: var(--color-text-inverse);
-  font-size: var(--font-size-sm);
-  cursor: pointer;
-  transition: opacity var(--transition-fast);
-}
-
-.music-header__btn:hover {
-  opacity: 0.85;
 }
 
 .music-header__user {
@@ -400,14 +322,6 @@ const handleKeydown = (e: KeyboardEvent) => {
   .music-header__user a {
     font-size: var(--font-size-sm);
   }
-
-  .music-header__input {
-    width: 120px;
-  }
-
-  .music-header__input:focus {
-    width: 160px;
-  }
 }
 
 @media (max-width: 600px) {
@@ -428,24 +342,6 @@ const handleKeydown = (e: KeyboardEvent) => {
   .music-header__hamburger {
     display: flex;
     margin-left: auto;
-  }
-
-  .music-header__search {
-    flex: 1;
-    min-width: 0;
-  }
-
-  .music-header__input {
-    width: 100%;
-    flex: 1;
-  }
-
-  .music-header__input:focus {
-    width: 100%;
-  }
-
-  .music-header__btn {
-    flex-shrink: 0;
   }
 }
 </style>

@@ -7,12 +7,6 @@ const audioStore = useAudioStore()
 
 // 表头配置
 const header = ['#', '标题', '歌手', '作曲', '作词', '', '时长']
-
-// 处理歌曲选择
-function handleSelect(index: number) {
-  audioStore.index = index
-  audioStore.isPlaying = true
-}
 </script>
 
 <template>
@@ -29,7 +23,6 @@ function handleSelect(index: number) {
         :duration="song.duration"
         :active="index === audioStore.index"
         :index="index + 1"
-        @select="handleSelect(index)"
       />
     </SongList>
   </div>

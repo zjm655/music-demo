@@ -34,17 +34,6 @@ const handlePlay = (id: number | string) => {
     vid: song?.vid ?? undefined,
   })
 }
-const handleAddNext = (id: number | string) => {
-  const song = searchResults.value.find((s) => s.id === id)
-  audio.addNext(id, {
-    title: song?.title,
-    artist: song?.artist ?? undefined,
-    album: song?.album ?? undefined,
-    duration: song?.duration,
-    coverUrl: song?.coverUrl,
-    vid: song?.vid ?? undefined,
-  })
-}
 onMounted(() => {
  const urlKeyword = route.query.keyword as string;
  if (urlKeyword) {
@@ -98,7 +87,6 @@ watch(() => route.query.keyword, (newKeyword) => {
           :create-time="null"
           :index="index + 1"
           @click="handlePlay"
-          @add-next-click="handleAddNext"
         />
       </template>
     </SongList>
@@ -119,7 +107,8 @@ watch(() => route.query.keyword, (newKeyword) => {
 
 .search-input-wrapper {
   display: flex;
-  gap: var(--space-sm, 8px);
+  align-items: center;
+  gap: var(--space-xs, 8px);
   max-width: 400px;
 }
 
@@ -127,7 +116,45 @@ watch(() => route.query.keyword, (newKeyword) => {
   flex: 1;
 }
 
+/* 搜索输入框 */
+.search-input :deep(.el-input__wrapper) {
+  height: 32px;
+  padding: 0 var(--space-sm, 12px);
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: var(--radius-sm, 6px);
+  background: var(--color-input-bg, #f9fafb);
+  transition: border-color var(--transition-fast, 0.15s);
+  box-shadow: none;
+}
+
+.search-input :deep(.el-input__wrapper:focus),
+.search-input :deep(.el-input__wrapper:hover) {
+  border-color: var(--color-border-focus, #8b5cf6);
+}
+
+.search-input :deep(.el-input__inner) {
+  color: var(--color-text-primary, #1f2937);
+  font-size: var(--font-size-sm, 13px);
+}
+
+.search-input :deep(.el-input__inner::placeholder) {
+  color: var(--color-input-placeholder, #9ca3af);
+}
+
+/* 搜索按钮 */
 .search-btn {
-  flex-shrink: 0;
+  height: 32px;
+  padding: 0 var(--space-md, 16px);
+  border: none;
+  border-radius: var(--radius-sm, 6px);
+  background: var(--gradient-primary, linear-gradient(135deg, #8b5cf6, #ec4899));
+  color: #fff;
+  font-size: var(--font-size-sm, 13px);
+  cursor: pointer;
+  transition: opacity var(--transition-fast, 0.15s);
+}
+
+.search-btn:hover {
+  opacity: 0.85;
 }
 </style>

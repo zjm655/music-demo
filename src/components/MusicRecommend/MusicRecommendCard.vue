@@ -21,10 +21,6 @@ const audio = useAudio()
 async function openAudio(id: number | string) {
   await audio.addNextAndPlay(id)
 }
-
-async function addNext(id: number | string) {
-  await audio.addNext(id)
-}
 </script>
 
 <template>
@@ -39,7 +35,6 @@ async function addNext(id: number | string) {
         :key="song.id"
         v-bind="song"
         @click="openAudio"
-        @add-next-click="addNext"
       />
     </div>
   </div>

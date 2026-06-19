@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { MoreFilled } from '@element-plus/icons-vue'
+import { useAudio } from '@/hooks/media'
 
 interface Props {
   id: number | string
@@ -22,9 +23,7 @@ const props = withDefaults(defineProps<Props>(), {
   index: undefined,
 })
 
-const emit = defineEmits<{
-  select: []
-}>()
+const audio = useAudio()
 
 function formatDuration(seconds: number | null): string {
   if (typeof seconds !== 'number' || seconds <= 0) return '--:--'
@@ -38,7 +37,7 @@ function formatDuration(seconds: number | null): string {
   <div
     class="audio-song"
     :class="{ 'audio-song--active': props.active }"
-    @click="emit('select')"
+    @click="audio.loadById(props.id)"
   >
     <span class="audio-song__index">{{ props.index ?? '' }}</span>
     <span class="audio-song__title">{{ props.title }}</span>

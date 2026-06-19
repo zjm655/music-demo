@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useAudio } from '@/hooks/media'
+
 interface Props {
   id: number | string
   title: string
@@ -31,8 +33,9 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
   click: [id: number | string]
-  addNextClick: [id: number | string]
 }>()
+
+const audio = useAudio()
 
 function handleCardClick() {
   emit('click', props.id)
@@ -40,7 +43,12 @@ function handleCardClick() {
 
 function handleAddNext(e: Event) {
   e.stopPropagation()
-  emit('addNextClick', props.id)
+  audio.addNext(props.id, {
+    title: props.title,
+    artist: props.artist ?? undefined,
+    album: props.album ?? undefined,
+    coverUrl: props.coverUrl ?? undefined,
+  })
 }
 </script>
 
