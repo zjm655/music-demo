@@ -34,7 +34,7 @@ function handleDelete(e: Event) {
       <el-image class="playlist-grid-item__cover" :src="props.coverUrl || '/favicon.ico'" fit="cover" />
       <div class="playlist-grid-item__overlay">
         <button class="playlist-grid-item__delete" title="删除歌单" @click="handleDelete">
-          <el-icon :size="18"><Delete /></el-icon>
+          <el-icon :size="14"><Delete /></el-icon>
         </button>
       </div>
     </div>
@@ -74,12 +74,13 @@ function handleDelete(e: Event) {
   position: absolute;
   inset: 0;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: rgba(0, 0, 0, 0.4);
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding: var(--space-sm, 8px);
   opacity: 0;
   transition: opacity var(--transition-normal, 0.3s);
   border-radius: var(--radius-md, 8px);
+  pointer-events: none;
 }
 
 .playlist-grid-item__cover-wrapper:hover .playlist-grid-item__overlay {
@@ -90,13 +91,14 @@ function handleDelete(e: Event) {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 28px;
+  height: 28px;
   border: none;
   border-radius: 50%;
   background-color: rgba(255, 255, 255, 0.9);
   color: #e74c3c;
   cursor: pointer;
+  pointer-events: auto;
   transition: transform var(--transition-fast, 0.15s), background var(--transition-fast, 0.15s);
 }
 

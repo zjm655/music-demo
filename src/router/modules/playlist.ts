@@ -20,6 +20,11 @@ export const playlistRouter = [
         name: 'MyPlaylists',
         component: () => import('@/views/MyPlaylists.vue'),
       },
+      {
+        path: 'playlist-detail',
+        name: 'PlaylistDetail',
+        component: () => import('@/views/PlaylistDetail.vue'),
+      },
     ],
   },
 ]

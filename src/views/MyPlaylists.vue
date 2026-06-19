@@ -63,7 +63,7 @@ async function handleDelete(id: number | string) {
 }
 
 function handleClick(id: number | string) {
-  router.push({ path: '/playlist-detail', query: { id: String(id) } })
+  router.push({ path: '/playlist/playlist-detail', query: { id: String(id) } })
 }
 
 onMounted(() => {
