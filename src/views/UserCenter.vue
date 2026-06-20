@@ -2,13 +2,11 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import { User, Lock } from '@element-plus/icons-vue'
 import type { FormInstance, FormRules } from 'element-plus'
-import {
-  useGetUserProfile,
-  useUpdateUserProfile,
-  useUpdatePassword,
-} from '@/hooks/user'
+import { useGetUserProfile, useUpdateUserProfile, useUpdatePassword } from '@/hooks/user'
 import type { UpdateUserProfilePayload } from '@/hooks/user'
 import { popup } from '@/utils/popup'
+import { useUserStore } from '@/stores/user'
+import router from '@/router'
 
 /* ── 常量 ── */
 const PRESET_TAGS = ['音乐', '游戏', '阅读', '乐器', '运动', '电影', '摄影', '美食']
@@ -40,7 +38,11 @@ const passwordForm = reactive({
   confirmPassword: '',
 })
 
-const validateConfirmPassword = (_rule: unknown, value: string, callback: (err?: Error) => void) => {
+const validateConfirmPassword = (
+  _rule: unknown,
+  value: string,
+  callback: (err?: Error) => void,
+) => {
   if (value !== passwordForm.newPassword) {
     callback(new Error('两次输入的密码不一致'))
   } else {
@@ -123,7 +125,7 @@ const handleChangePassword = async () => {
 /* ── 标签操作 ── */
 const allTags = computed(() => {
   const presetSet = new Set(PRESET_TAGS)
-  const customTags = selectedTags.value.filter(t => !presetSet.has(t))
+  const customTags = selectedTags.value.filter((t) => !presetSet.has(t))
   return [...PRESET_TAGS, ...customTags]
 })
 
@@ -143,6 +145,12 @@ const addCustomTag = () => {
 const removeTag = (tag: string) => {
   const i = selectedTags.value.indexOf(tag)
   if (i >= 0) selectedTags.value.splice(i, 1)
+}
+
+const handleQuiteLogin = () => {
+  localStorage.setItem('token', '')
+  useUserStore().isLogin = false
+  router.replace('home')
 }
 
 onMounted(loadUserProfile)
@@ -245,6 +253,10 @@ onMounted(loadUserProfile)
           </el-form-item>
 
           <div class="form-actions">
+            <el-button :loading="updateLoading" type="primary" @click="handleQuiteLogin">
+              退出登陆
+            </el-button>
+
             <el-button :loading="updateLoading" type="primary" @click="handleSaveProfile">
               保存修改
             </el-button>
