@@ -14,6 +14,7 @@ import type { SongItem } from '@/api/song'
 const router = useRouter()
 
 const activeTab = ref(0)
+const loading = ref(false)
 const { fetchCategories } = useGetCategories()
 const categories = ref<CategoryItem[]>([])
 // 动态标签：全部 + 后端返回的分类名称
@@ -39,11 +40,16 @@ const {
 
 // 获取有 MV 的歌曲列表
 async function getSongs(payload: GetSongsPayload) {
-  const request = useGetSongs()
-  const res = await request.fetchSongs(payload)
-  if (res?.code === 200 && res?.data) {
-    // 过滤出有 mvUrl 的歌曲
-    mvPlaylist.value = res.data.list.filter((song) => song.mvUrl != null)
+  loading.value = true
+  try {
+    const request = useGetSongs()
+    const res = await request.fetchSongs(payload)
+    if (res?.code === 200 && res?.data) {
+      // 过滤出有 mvUrl 的歌曲
+      mvPlaylist.value = res.data.list.filter((song) => song.mvUrl != null)
+    }
+  } finally {
+    loading.value = false
   }
 }
 
@@ -95,6 +101,7 @@ function goToMvVideo(id: number) {
         <span class="mv-recommend__arrow mv-recommend__arrow--left"></span>
       </button>
       <div
+        v-loading="loading"
         class="mv-recommend__lists"
         ref="listsRef"
         :style="listsStyle"

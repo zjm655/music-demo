@@ -72,3 +72,52 @@ onMounted(async () => {
   background: inherit;
 }
 </style>
+
+<style>
+/* Element Plus 弹窗主题覆盖（非 scoped，运行时注入，确保在 el 按需 CSS 之后） */
+.el-dialog {
+  background-color: var(--color-bg-elevated) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-lg) !important;
+  overflow: hidden;
+}
+.el-dialog__header {
+  border-bottom: 1px solid var(--color-border-soft);
+  margin-right: 0 !important;
+  padding: 16px 24px !important;
+}
+.el-dialog__title {
+  color: var(--color-text-primary) !important;
+  font-weight: 600;
+}
+.el-dialog__headerbtn .el-dialog__close {
+  color: var(--color-text-muted) !important;
+}
+.el-dialog__headerbtn:hover .el-dialog__close {
+  color: var(--color-primary) !important;
+}
+.el-dialog__body {
+  color: var(--color-text-primary) !important;
+  padding: 24px !important;
+}
+.el-dialog__footer {
+  border-top: 1px solid var(--color-border-soft);
+  padding: 16px 24px !important;
+}
+.el-overlay {
+  background: rgba(0, 0, 0, 0.45) !important;
+  backdrop-filter: blur(4px);
+}
+
+/* Element Plus v-loading 主题覆盖 */
+.el-loading-mask {
+  background-color: rgba(15, 10, 31, 0.35) !important;
+}
+.el-loading-spinner .path {
+  stroke: var(--color-primary) !important;
+}
+.el-loading-spinner .el-loading-text {
+  color: var(--color-primary) !important;
+}
+</style>

@@ -10,6 +10,7 @@ import { useGetCategories } from '@/hooks/category'
 import type { CategoryItem } from '@/hooks/category'
 
 const activeTab = ref(0)
+const loading = ref(false)
 const { fetchCategories } = useGetCategories()
 const categories = ref<CategoryItem[]>([])
 // 动态标签：全部 + 后端返回的分类名称
@@ -51,10 +52,15 @@ function switchTab(index: number) {
 
 // 获取歌曲列表
 async function getSongs(payload: GetSongsPayload) {
-  const request = useGetSongs()
-  const res = await request.fetchSongs(payload)
-  if (res?.code === 200 && res?.data != undefined) {
-    playlist.value = res?.data
+  loading.value = true
+  try {
+    const request = useGetSongs()
+    const res = await request.fetchSongs(payload)
+    if (res?.code === 200 && res?.data != undefined) {
+      playlist.value = res?.data
+    }
+  } finally {
+    loading.value = false
   }
 }
 
@@ -84,11 +90,9 @@ onMounted(async () => {
     <playlist-nav :tabs="musicTab" :active-tab="activeTab" @tab-change="switchTab" />
     <!-- 左边的翻页器 -->
     <div class="music-recommend__carousel">
-      <button class="music-recommend__pager music-recommend__pager--prev" @click="prevPage">
-        <span class="music-recommend__arrow music-recommend__arrow--left"></span>
-      </button>
       <!-- 歌曲列表 -->
       <div
+        v-loading="loading"
         class="music-recommend__lists"
         ref="listsRef"
         :style="listsStyle"
@@ -101,9 +105,6 @@ onMounted(async () => {
           <music-recommend-card :page-index="playlist.page" :size="9" :songs="page" />
         </div>
       </div>
-      <button class="music-recommend__pager music-recommend__pager--next" @click="nextPage">
-        <span class="music-recommend__arrow music-recommend__arrow--right"></span>
-      </button>
     </div>
     <playlist-dots :total="pages.length" :active-index="currentPage" @dot-click="goToPage" />
   </div>

@@ -89,7 +89,9 @@ async function openPlaylistSelect() {
 // 确认添加到歌单
 async function confirmAddToPlaylist() {
   if (!targetPlaylistId.value) return
+  showPlaylistDialog.value = false
   submitting.value = true
+  popup.message.info('正在添加到歌单...')
   try {
     const songs = getSelectedSongs()
     let successCount = 0
@@ -117,7 +119,6 @@ async function confirmAddToPlaylist() {
     }
     if (successCount > 0) {
       popup.message.success(`已添加 ${successCount} 首歌曲到歌单`)
-      showPlaylistDialog.value = false
       listStore.clearSelection()
     }
   } finally {
@@ -131,16 +132,16 @@ async function confirmAddToPlaylist() {
     <!-- 批量操作栏 -->
     <div v-if="audioStore.playlist.length > 0" class="audio-playlist__batch-bar">
       <template v-if="listStore.isBatchMode">
-        <el-button size="small" @click="toggleSelectAll">
+        <el-button size="small" @click="toggleSelectAll" :disabled="submitting">
           {{ isAllSelected ? '取消全选' : '全选' }}
         </el-button>
-        <el-button size="small" @click="openPlaylistSelect" :disabled="listStore.selectedCount === 0">
+        <el-button size="small" @click="openPlaylistSelect" :disabled="listStore.selectedCount === 0 || submitting">
           添加到歌单
         </el-button>
-        <el-button size="small" type="danger" @click="removeFromList" :disabled="listStore.selectedCount === 0">
+        <el-button size="small" type="danger" @click="removeFromList" :disabled="listStore.selectedCount === 0 || submitting">
           移除
         </el-button>
-        <el-button size="small" type="primary" @click="listStore.toggleBatchMode()">
+        <el-button size="small" type="primary" @click="listStore.toggleBatchMode()" :disabled="submitting">
           退出复选
         </el-button>
       </template>

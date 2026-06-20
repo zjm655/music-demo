@@ -154,7 +154,9 @@ async function confirmAddToPlaylist() {
     return
   }
 
+  showPlaylistDialog.value = false
   submitting.value = true
+  popup.message.info('正在添加到歌单...')
   try {
     const selectedKeys = searchStore.getSelectedKeys()
     let successCount = 0
@@ -188,7 +190,6 @@ async function confirmAddToPlaylist() {
     if (successCount > 0) {
       popup.message.success(`已添加 ${successCount} 首歌曲到歌单`)
       searchStore.clearSelection()
-      showPlaylistDialog.value = false
     } else {
       popup.message.error('添加失败，请重试')
     }
@@ -233,16 +234,16 @@ watch(() => route.query.keyword, (newKeyword) => {
         <!-- 批量操作按钮 -->
         <div v-if="searchStore.allResults.length > 0" class="batch-actions">
           <template v-if="isBatchMode">
-            <el-button size="small" @click="toggleSelectAll">
+            <el-button size="small" @click="toggleSelectAll" :disabled="submitting">
               {{ isAllSelected ? '取消全选' : '全选当前页' }}
             </el-button>
-            <el-button size="small" @click="addToPlaylist" :disabled="searchStore.selectedCount === 0">
+            <el-button size="small" @click="addToPlaylist" :disabled="searchStore.selectedCount === 0 || submitting">
               加入播放列表
             </el-button>
-            <el-button size="small" @click="openPlaylistSelect" :disabled="searchStore.selectedCount === 0">
+            <el-button size="small" @click="openPlaylistSelect" :disabled="searchStore.selectedCount === 0 || submitting">
               添加到歌单
             </el-button>
-            <el-button size="small" type="primary" @click="toggleBatchMode">
+            <el-button size="small" type="primary" @click="toggleBatchMode" :disabled="submitting">
               退出复选
             </el-button>
           </template>

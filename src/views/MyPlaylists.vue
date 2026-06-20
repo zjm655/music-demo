@@ -86,7 +86,7 @@ onMounted(() => {
         <span>新建歌单</span>
       </button>
     </div>
-    <playlist-grid :is-null="playlists.length === 0" v-loading="loading">
+    <playlist-grid :is-null="!loading && playlists.length === 0" v-loading="loading">
       <playlist-grid-item
         v-for="p in playlists"
         :key="p.id"
