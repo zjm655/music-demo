@@ -27,19 +27,5 @@ export function createCache<T>(ttl: number) {
     set(key: string, value: T): void {
       store.set(key, { value, expireAt: Date.now() + ttl })
     },
-    // 判断缓存是否存在且未过期，过期项会被自动删除
-    has(key: string): boolean {
-      const entry = store.get(key)
-      if (!entry) return false
-      if (Date.now() > entry.expireAt) {
-        store.delete(key)
-        return false
-      }
-      return true
-    },
-    // 主动删除指定缓存
-    delete(key: string): void {
-      store.delete(key)
-    },
   }
 }

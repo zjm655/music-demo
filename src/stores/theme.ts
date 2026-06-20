@@ -36,10 +36,7 @@ export const useThemeStore = defineStore('theme', () => {
 
   return {
     backgrounds,
-    currentBgIndex,
     currentBackground,
-    // isDark,
     setBg,
-    // toggleDark,
   }
 })

@@ -22,9 +22,6 @@ export const songDetailPath = '/songs/{id}'
 // ============ 分类模块 ============
 // 分类列表
 export const categoriesPath = '/categories'
-// 分类详情（{id} 为占位符，调用时替换）
-export const categoryDetailPath = '/categories/{id}'
-
 // ============ 歌单模块 ============
 // 歌单列表
 export const playlistsPath = '/playlists'

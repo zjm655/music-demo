@@ -15,9 +15,6 @@ export const useSearchStore = defineStore('search', () => {
   // 批量选择状态（响应式对象当集合用）
   const selectedMap = reactive<Record<string, true>>({})
 
-  // 总条数
-  const total = computed(() => allResults.value.length)
-
   // 总页数（从实际结果计算）
   const totalPages = computed(() => {
     return Math.max(1, Math.ceil(allResults.value.length / pageSize.value))
@@ -71,20 +68,11 @@ export const useSearchStore = defineStore('search', () => {
     page.value = 1
   }
 
-  // 重置所有状态
-  function reset() {
-    keyword.value = ''
-    page.value = 1
-    allResults.value = []
-    clearSelection()
-  }
-
   return {
     keyword,
     page,
     pageSize,
     allResults,
-    total,
     totalPages,
     currentPageResults,
     selectedMap,
@@ -96,6 +84,5 @@ export const useSearchStore = defineStore('search', () => {
     setKeyword,
     setPage,
     setAllResults,
-    reset,
   }
 })
