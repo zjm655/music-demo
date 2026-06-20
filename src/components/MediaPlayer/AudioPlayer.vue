@@ -73,7 +73,7 @@ function openPlaylist() {
         <el-icon v-else><Sort /></el-icon>
         <span v-if="audioStore.playMode === 'singleLoop'" class="mode-badge">1</span>
       </button>
-      <button class="player__btn" title="上一首" @click="audio.prevSong()">
+      <button class="player__btn" title="上一首" @click="audioStore.playMode === 'listLoop'?audio.prevSong():audio.randomSong()">
         <el-icon><ArrowLeftBold /></el-icon>
       </button>
       <button
@@ -84,7 +84,7 @@ function openPlaylist() {
         <el-icon v-if="audioStore.isPlaying"><VideoPause /></el-icon>
         <el-icon v-else><CaretRight /></el-icon>
       </button>
-      <button class="player__btn" title="下一首" @click="audio.nextSong()">
+      <button class="player__btn" title="下一首" @click="audioStore.playMode === 'listLoop'?audio.nextSong():audio.randomSong()">
         <el-icon><ArrowRightBold /></el-icon>
       </button>
     </div>

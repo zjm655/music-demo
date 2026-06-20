@@ -57,7 +57,7 @@ const registerRules: FormRules = {
     { min: 2, max: 20, message: '用户名长度为 2-20 个字符', trigger: 'blur' },
   ],
   email: [
-    { required: true, message: '请输入邮箱', trigger: 'blur' },
+    { required: false, message: '请输入邮箱', trigger: 'blur' },
     { type: 'email', message: '请输入有效的邮箱地址', trigger: 'blur' },
   ],
   password: [
@@ -93,12 +93,21 @@ const passwordStrength = computed(() => {
 const handleRegister = async () => {
   const valid = await registerFormRef.value?.validate().catch(() => false)
   if (!valid) return
-  const res = await register({
+  const form:{
+    email?:string,
+    username:string,
+    password:string,
+    confirmPassword:string
+  } = {
     username: registerForm.username,
-    email: registerForm.email,
     password: registerForm.password,
     confirmPassword: registerForm.confirmPassword,
-  })
+  }
+
+  if(registerForm.email){
+    form.email = registerForm.email
+  }
+  const res = await register(form)
   if (res?.code === 200) {
     activeTab.value = 'login'
     // 清空注册表单

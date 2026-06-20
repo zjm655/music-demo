@@ -7,7 +7,8 @@ interface Props {
   coverUrl?: string | null
   mvUrl?: string | null
   duration?: number | null
-  songId?: number | null
+  songId?: number | string | null
+  vid?: string | null
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -17,17 +18,18 @@ const props = withDefaults(defineProps<Props>(), {
   mvUrl: null,
   duration: null,
   songId: null,
+  vid: null,
 })
 
 // 定义点击事件
 const emit = defineEmits<{
-  click: [id: number]
+  click: [id: number | string, vid?: string]
 }>()
 
 // 处理点击
 function handleClick() {
   if (props.songId != null) {
-    emit('click', props.songId)
+    emit('click', props.songId, props.vid ?? undefined)
   }
 }
 

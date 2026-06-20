@@ -2,6 +2,7 @@
 import SongCard from './SongCard.vue'
 import type { GetSongsResPayload } from '@/hooks/song'
 import { useAudio } from '@/hooks/media'
+import type { ThirdpartyMeta } from '@/hooks/common/useGetSongUnified'
 
 // 如果需要默认值，必须搭配 withDefaults
 const props = withDefaults(
@@ -9,6 +10,7 @@ const props = withDefaults(
     songs: GetSongsResPayload['list']
     pageIndex: number | string
     size: number | string
+    thirdpartyMetaMap?: Record<string, ThirdpartyMeta>
   }>(),
   {
     size: 9,
@@ -19,7 +21,8 @@ const props = withDefaults(
 const audio = useAudio()
 
 async function openAudio(id: number | string) {
-  await audio.addNextAndPlay(id)
+  const meta = typeof id === 'string' ? props.thirdpartyMetaMap?.[id] : undefined
+  await audio.addNextAndPlay(id, meta)
 }
 </script>
 
