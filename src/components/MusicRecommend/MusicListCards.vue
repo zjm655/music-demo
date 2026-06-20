@@ -44,6 +44,7 @@ const {
 async function switchTab(index: number) {
   loading.value = true
   activeTab.value = index
+  goToPage(0)
   const categoryId = index === 0 ? undefined : categories.value[index - 1]?.id
   await getSongs({
     page: 1,

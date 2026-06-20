@@ -10,11 +10,13 @@ import { useGetSongs, type GetSongsPayload } from '@/hooks/song'
 import { useGetCategories } from '@/hooks/category'
 import type { CategoryItem } from '@/hooks/category'
 import type { SongItem } from '@/api/song'
+import { useSearchThirdpartySongs } from '@/hooks/thirdparty'
 
 const router = useRouter()
 
 const activeTab = ref(0)
 const loading = ref(false)
+const thirdpartyVidMap = ref<Record<string, string>>({})
 const { fetchCategories } = useGetCategories()
 const categories = ref<CategoryItem[]>([])
 // 动态标签：全部 + 后端返回的分类名称
@@ -40,30 +42,62 @@ const {
 
 // 获取有 MV 的歌曲列表
 async function getSongs(payload: GetSongsPayload) {
-  loading.value = true
-  try {
-    const request = useGetSongs()
-    const res = await request.fetchSongs(payload)
-    if (res?.code === 200 && res?.data) {
-      // 过滤出有 mvUrl 的歌曲
-      mvPlaylist.value = res.data.list.filter((song) => song.mvUrl != null)
-    }
-  } finally {
-    loading.value = false
+  const request = useGetSongs()
+  const res = await request.fetchSongs(payload)
+  if (res?.code === 200 && res?.data) {
+    mvPlaylist.value = res.data.list.filter((song) => song.mvUrl != null)
   }
 }
 
+// 搜索第三方 MV 并合并到推荐列表
+async function searchMvSongs(keyword: string) {
+  loading.value = true
+  thirdpartyVidMap.value = {}
+  const { searchThirdpartySongs } = useSearchThirdpartySongs()
+  const res = await searchThirdpartySongs({ keyword, page: 1, num: 30 })
+  if (res?.code === 200 && res?.data) {
+    const mapped = res.data.list
+      .filter((item) => item.vid)
+      .map((item) => {
+        thirdpartyVidMap.value[item.id] = item.vid
+        return {
+          id: item.id,
+          mvDescription: item.song,
+          mvAuthor: item.singer,
+          coverUrl: item.cover,
+          mvUrl: '__thirdparty__',
+          duration: null,
+          title: item.song,
+          artist: item.singer,
+          album: item.album,
+          lyricist: null,
+          composer: null,
+          lyrics: null,
+          audioUrl: null,
+          category: null,
+          createTime: null,
+          categoryId: 0,
+        }
+      })
+    mvPlaylist.value = [...mvPlaylist.value, ...mapped] as SongItem[]
+  }
+  loading.value = false
+}
+
 // 切换 tab
-function switchTab(index: number) {
+async function switchTab(index: number) {
+  loading.value = true
   activeTab.value = index
-  // 根据 index 获取 categoryId：index=0 为全部，index>0 对应 categories[index-1]
+  goToPage(0)
   const categoryId = index === 0 ? undefined : categories.value[index - 1]?.id
-  getSongs({
+  await getSongs({
     page: 1,
     pageSize: 54,
     type: 'song',
     categoryId,
   })
+  await searchMvSongs(categories.value[index - 1]?.description || '音乐')
+  loading.value = false
 }
 
 // 组件挂载时获取分类列表和 MV 列表
@@ -78,8 +112,10 @@ onMounted(async () => {
 })
 
 // 跳转到 MV 播放页
-function goToMvVideo(id: number) {
-  router.push({ path: '/video', query: { id: String(id) } })
+function goToMvVideo(id: number | string, vid?: string) {
+  const query: Record<string, string> = { id: String(id) }
+  if (vid) query.vid = vid
+  router.push({ path: '/video', query })
 }
 </script>
 
@@ -109,7 +145,8 @@ function goToMvVideo(id: number) {
         @touchmove="onTouchMove"
         @touchend="onTouchEnd"
       >
-        <div class="mv-recommend__page" v-for="(page, index) in pages" :key="index">
+        <div class="guijiap" v-if="loading"></div>
+        <div v-else class="mv-recommend__page" v-for="(page, index) in pages" :key="index">
           <div class="mv-recommend__row">
             <div class="mv-recommend__card" v-for="song in page.slice(0, 3)" :key="song.id">
               <mv-card
@@ -119,6 +156,7 @@ function goToMvVideo(id: number) {
                 :mv-url="song.mvUrl"
                 :duration="song.duration"
                 :song-id="song.id"
+                :vid="thirdpartyVidMap[String(song.id)]"
                 @click="goToMvVideo"
               />
             </div>
@@ -132,6 +170,7 @@ function goToMvVideo(id: number) {
                 :mv-url="song.mvUrl"
                 :duration="song.duration"
                 :song-id="song.id"
+                :vid="thirdpartyVidMap[String(song.id)]"
                 @click="goToMvVideo"
               />
             </div>
@@ -154,6 +193,9 @@ function goToMvVideo(id: number) {
 </template>
 
 <style scoped>
+.guijiap {
+  height: 400px;
+}
 .mv-recommend {
   overflow: hidden;
   gap: var(--space-lg);
