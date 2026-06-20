@@ -8,9 +8,12 @@ import { paginate } from '@/utils/paginate'
 import { useGetSongs, type GetSongsPayload, type GetSongsResPayload } from '@/hooks/song'
 import { useGetCategories } from '@/hooks/category'
 import type { CategoryItem } from '@/hooks/category'
+import { useSearchThirdpartySongs } from '@/hooks/thirdparty'
+import type { ThirdpartyMeta } from '@/hooks/common/useGetSongUnified'
 
 const activeTab = ref(0)
 const loading = ref(false)
+const thirdpartyMetaMap = ref<Record<string, ThirdpartyMeta>>({})
 const { fetchCategories } = useGetCategories()
 const categories = ref<CategoryItem[]>([])
 // 动态标签：全部 + 后端返回的分类名称
@@ -38,45 +41,91 @@ const {
   onTouchEnd,
 } = useCarousel({ totalPages: computed(() => pages.value.length) })
 
-function switchTab(index: number) {
+async function switchTab(index: number) {
+  loading.value = true
   activeTab.value = index
-  // 根据 index 获取 categoryId：index=0 为全部，index>0 对应 categories[index-1]
   const categoryId = index === 0 ? undefined : categories.value[index - 1]?.id
-  getSongs({
+  await getSongs({
     page: 1,
     pageSize: 54,
     type: 'song',
     categoryId,
   })
+  await searchSongs(categories.value[index - 1]?.description || '音乐')
+  loading.value = false
+
 }
 
 // 获取歌曲列表
 async function getSongs(payload: GetSongsPayload) {
   loading.value = true
-  try {
     const request = useGetSongs()
     const res = await request.fetchSongs(payload)
     if (res?.code === 200 && res?.data != undefined) {
       playlist.value = res?.data
     }
-  } finally {
-    loading.value = false
+}
+// 搜索第三方歌曲并合并到推荐列表
+async function searchSongs(keyword: string) {
+  thirdpartyMetaMap.value = {}
+  const { searchThirdpartySongs } = useSearchThirdpartySongs()
+  const res = await searchThirdpartySongs({ keyword, page: 1, num: 30 })
+  if (res?.code === 200 && res?.data) {
+    const mapped = res.data.list.map((item) => {
+      thirdpartyMetaMap.value[item.id] = {
+        title: item.song,
+        artist: item.singer,
+        album: item.album,
+        coverUrl: item.cover,
+        vid: item.vid,
+      }
+      return {
+        id: item.id,
+        title: item.song,
+        artist: item.singer,
+        album: item.album,
+        coverUrl: item.cover,
+        vid: item.vid,
+        duration: null,
+        lyricist: null,
+        composer: null,
+        lyrics: null,
+        audioUrl: null,
+        mvUrl: null,
+        mvDescription: null,
+        mvAuthor: null,
+        category: null,
+        createTime: null,
+        categoryId: 0,
+      }
+    })
+    playlist.value = {
+      ...playlist.value,
+      list: [...playlist.value.list, ...mapped] as GetSongsResPayload['list'],
+      total: playlist.value.total + res.data.total,
+    }
   }
 }
 
 // 组件挂载时获取分类列表和歌曲列表
 onMounted(async () => {
   // 获取分类列表
+  loading.value = true
   const catRes = await fetchCategories()
   if (catRes?.code === 200 && catRes?.data) {
     categories.value = catRes.data
   }
+
   // 获取歌曲列表
   await getSongs({
     page: 1,
     pageSize: 54,
     type: 'song',
   })
+
+  await searchSongs('音乐')
+  loading.value = false
+
 })
 </script>
 
@@ -103,9 +152,10 @@ onMounted(async () => {
         @touchmove="onTouchMove"
         @touchend="onTouchEnd"
       >
+        <div class="gujiaping" v-if="loading"></div>
         <!-- 外部的大卡片，一个大卡片9个小卡片，3 X 3布局 -->
-        <div class="music-recommend__page" v-for="(page, index) in pages" :key="index">
-          <music-recommend-card :page-index="playlist.page" :size="9" :songs="page" />
+        <div v-else class="music-recommend__page" v-for="(page, index) in pages" :key="index">
+          <music-recommend-card :page-index="playlist.page" :size="9" :songs="page" :thirdparty-meta-map="thirdpartyMetaMap" />
         </div>
       </div>
       <button class="music-recommend__pager music-recommend__pager--next" @click="nextPage">
@@ -117,6 +167,9 @@ onMounted(async () => {
 </template>
 
 <style scoped>
+.gujiaping {
+  height: 220px;
+}
 .music-recommend {
   overflow: hidden;
   gap: var(--space-lg, 16px);

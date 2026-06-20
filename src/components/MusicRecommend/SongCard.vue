@@ -117,6 +117,7 @@ function handleAddNext(e: Event) {
   align-items: center;
   gap: var(--space-sm, 8px);
   padding: var(--space-md, 12px) var(--space-md, 12px);
+  min-width: 0;
   cursor: pointer;
   transition: background var(--transition-fast, 0.15s);
 }
