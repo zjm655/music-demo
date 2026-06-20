@@ -16,7 +16,7 @@ const statusText = computed(() => {
   <div class="lyric-top-main">
     <div class="lyric-top-main__disc" :class="{ 'lyric-top-main__disc--playing': audioStore.isPlaying }">
       <div class="lyric-top-main__disc-inner">
-        <el-image :src="coverUrl" class="lyric-top-main__cover" />
+        <el-image :src="coverUrl" class="lyric-top-main__cover" loading="lazy" />
       </div>
     </div>
     <h3 class="lyric-top-main__title">{{ songTitle }}</h3>

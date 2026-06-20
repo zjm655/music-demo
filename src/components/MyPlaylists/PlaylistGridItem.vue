@@ -31,7 +31,7 @@ function handleDelete(e: Event) {
 <template>
   <div class="playlist-grid-item" @click="handleClick">
     <div class="playlist-grid-item__cover-wrapper">
-      <el-image class="playlist-grid-item__cover" :src="props.coverUrl || '/favicon.ico'" fit="cover" />
+      <el-image class="playlist-grid-item__cover" :src="props.coverUrl || '/favicon.ico'" fit="cover" loading="lazy" />
       <div class="playlist-grid-item__overlay">
         <button class="playlist-grid-item__delete" title="删除歌单" @click="handleDelete">
           <el-icon :size="14"><Delete /></el-icon>

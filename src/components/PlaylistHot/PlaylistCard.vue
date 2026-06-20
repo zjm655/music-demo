@@ -17,7 +17,7 @@ const props = withDefaults(defineProps<Props>(), {
   <div class="playlist-card">
     <!-- Image section with hover overlay -->
     <div class="image-wrapper">
-      <el-image class="cover-image" :src="props.imageUrl" fit="cover" />
+      <el-image class="cover-image" :src="props.imageUrl" fit="cover" loading="lazy" />
       <div class="image-overlay">
         <span class="play-icon"></span>
       </div>
