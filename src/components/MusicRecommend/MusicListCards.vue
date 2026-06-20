@@ -90,6 +90,9 @@ onMounted(async () => {
     <playlist-nav :tabs="musicTab" :active-tab="activeTab" @tab-change="switchTab" />
     <!-- 左边的翻页器 -->
     <div class="music-recommend__carousel">
+      <button class="music-recommend__pager music-recommend__pager--prev" @click="prevPage">
+        <span class="music-recommend__arrow music-recommend__arrow--left"></span>
+      </button>
       <!-- 歌曲列表 -->
       <div
         v-loading="loading"
@@ -105,6 +108,9 @@ onMounted(async () => {
           <music-recommend-card :page-index="playlist.page" :size="9" :songs="page" />
         </div>
       </div>
+      <button class="music-recommend__pager music-recommend__pager--next" @click="nextPage">
+        <span class="music-recommend__arrow music-recommend__arrow--right"></span>
+      </button>
     </div>
     <playlist-dots :total="pages.length" :active-index="currentPage" @dot-click="goToPage" />
   </div>
