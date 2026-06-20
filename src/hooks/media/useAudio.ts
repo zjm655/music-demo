@@ -240,7 +240,7 @@ export function useAudio() {
 
     // 检查是否已在 playlist
     if (store.playlist.some((s) => String(s.id) === songId)) {
-      popup.message.warning('歌曲已在播放列表中')
+      // popup.message.warning('歌曲已在播放列表中')
       return
     }
 
@@ -250,7 +250,7 @@ export function useAudio() {
 
     if (res.code === 200 && res.data) {
       store.playlist.splice(store.index + 1, 0, res.data.song as unknown as Song)
-      popup.message.success('已添加到下一首播放')
+      // popup.message.success('已添加到下一首播放')
     } else {
       popup.message.error(res.message || '添加歌曲失败')
     }

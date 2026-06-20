@@ -378,3 +378,51 @@ button {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-primary-hover);
 }
+
+/* ============================================================
+ * Element Plus 弹窗全局样式（通过覆盖 CSS 变量适配主题）
+ * ============================================================ */
+:root {
+  --el-dialog-bg-color: var(--color-bg-elevated);
+  --el-dialog-border-radius: var(--radius-lg);
+  --el-dialog-padding-primary: var(--space-xl);
+  --el-dialog-title-font-size: var(--font-size-lg);
+}
+
+.el-dialog {
+  border: 1px solid var(--color-border) !important;
+  box-shadow: var(--shadow-lg) !important;
+  overflow: hidden;
+}
+
+.el-dialog__header {
+  border-bottom: 1px solid var(--color-border-soft);
+  margin-right: 0;
+}
+
+.el-dialog__title {
+  color: var(--color-text-primary) !important;
+  font-weight: 600;
+}
+
+.el-dialog__headerbtn .el-dialog__close {
+  color: var(--color-text-muted) !important;
+}
+
+.el-dialog__headerbtn:hover .el-dialog__close {
+  color: var(--color-primary) !important;
+}
+
+.el-dialog__body {
+  color: var(--color-text-primary);
+}
+
+.el-dialog__footer {
+  border-top: 1px solid var(--color-border-soft);
+}
+
+/* 遮罩层 */
+.el-overlay {
+  background: rgba(0, 0, 0, 0.45) !important;
+  backdrop-filter: blur(4px);
+}

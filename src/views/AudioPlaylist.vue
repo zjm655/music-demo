@@ -22,6 +22,7 @@ const header = ['#', '标题', '歌手', '作曲', '作词', '', '时长']
 const showPlaylistDialog = ref(false)
 const playlists = ref<PlaylistItem[]>([])
 const targetPlaylistId = ref<number | null>(null)
+const submitting = ref(false)
 
 // 全选
 const isAllSelected = computed(() => {
@@ -88,34 +89,39 @@ async function openPlaylistSelect() {
 // 确认添加到歌单
 async function confirmAddToPlaylist() {
   if (!targetPlaylistId.value) return
-  const songs = getSelectedSongs()
-  let successCount = 0
-  for (const song of songs) {
-    if (!song) continue
-    const source = song.source || 'local'
-    let res: { code?: number } | null = null
-    if (source === 'local') {
-      res = await operatePlaylistSong({
-        playlistId: targetPlaylistId.value,
-        songId: Number(song.id),
-        action: 'add',
-      })
-    } else {
-      res = await addExternalSong({
-        playlistId: targetPlaylistId.value,
-        songId: String(song.id),
-        source,
-        name: song.title,
-        artist: song.artist ?? undefined,
-        cover: song.coverUrl ?? undefined,
-      })
+  submitting.value = true
+  try {
+    const songs = getSelectedSongs()
+    let successCount = 0
+    for (const song of songs) {
+      if (!song) continue
+      const source = song.source || 'local'
+      let res: { code?: number } | null = null
+      if (source === 'local') {
+        res = await operatePlaylistSong({
+          playlistId: targetPlaylistId.value,
+          songId: Number(song.id),
+          action: 'add',
+        })
+      } else {
+        res = await addExternalSong({
+          playlistId: targetPlaylistId.value,
+          songId: String(song.id),
+          source,
+          name: song.title,
+          artist: song.artist ?? undefined,
+          cover: song.coverUrl ?? undefined,
+        })
+      }
+      if (res?.code === 200) successCount++
     }
-    if (res?.code === 200) successCount++
-  }
-  if (successCount > 0) {
-    popup.message.success(`已添加 ${successCount} 首歌曲到歌单`)
-    showPlaylistDialog.value = false
-    listStore.clearSelection()
+    if (successCount > 0) {
+      popup.message.success(`已添加 ${successCount} 首歌曲到歌单`)
+      showPlaylistDialog.value = false
+      listStore.clearSelection()
+    }
+  } finally {
+    submitting.value = false
   }
 }
 </script>
@@ -190,7 +196,7 @@ async function confirmAddToPlaylist() {
       </el-radio-group>
       <template #footer>
         <el-button @click="showPlaylistDialog = false">取消</el-button>
-        <el-button type="primary" @click="confirmAddToPlaylist">确定</el-button>
+        <el-button type="primary" @click="confirmAddToPlaylist" :loading="submitting">确定</el-button>
       </template>
     </el-dialog>
   </div>

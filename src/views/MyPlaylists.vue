@@ -11,15 +11,21 @@ import PlaylistGridItem from '@/components/MyPlaylists/PlaylistGridItem.vue'
 
 const router = useRouter()
 const playlists = ref<PlaylistItem[]>([])
+const loading = ref(false)
 
 const { fetchPlaylists } = useGetPlaylists()
 const { createPlaylist } = useCreatePlaylist()
 const { deletePlaylist } = useDeletePlaylist()
 
 async function loadPlaylists() {
-  const res = await fetchPlaylists()
-  if (res?.code === 200 && res.data) {
-    playlists.value = res.data
+  loading.value = true
+  try {
+    const res = await fetchPlaylists()
+    if (res?.code === 200 && res.data) {
+      playlists.value = res.data
+    }
+  } finally {
+    loading.value = false
   }
 }
 
@@ -80,7 +86,7 @@ onMounted(() => {
         <span>新建歌单</span>
       </button>
     </div>
-    <playlist-grid :is-null="playlists.length === 0">
+    <playlist-grid :is-null="playlists.length === 0" v-loading="loading">
       <playlist-grid-item
         v-for="p in playlists"
         :key="p.id"

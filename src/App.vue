@@ -20,6 +20,8 @@ onMounted(async () => {
       const userStore = useUserStore()
       userStore.loadUserInfo(res.data)
       userStore.isLogin = true
+    } else {
+      localStorage.setItem('token', '')
     }
     // 失败静默处理，不弹提示
   }
