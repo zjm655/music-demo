@@ -2,12 +2,14 @@
 import { useAudioStore } from '@/stores/audio'
 import { useAudio } from '@/hooks/media'
 import { useRouter } from 'vue-router'
+import { computed } from 'vue'
 import {
   CaretRight,
   VideoPause,
   ArrowLeftBold,
   ArrowRightBold,
-  Switch,
+  Refresh,
+  Sort,
   Headset,
   Operation,
   MagicStick,
@@ -16,6 +18,15 @@ import {
 const audioStore = useAudioStore()
 const audio = useAudio()
 const router = useRouter()
+
+const modeTitle = computed(() => {
+  const titles: Record<string, string> = {
+    listLoop: '列表循环',
+    singleLoop: '单曲循环',
+    shuffle: '随机播放',
+  }
+  return titles[audioStore.playMode] || '列表循环'
+})
 
 // 拖动进度条
 const handleSeek = (e: Event) => {
@@ -57,8 +68,10 @@ function openPlaylist() {
 
     <!-- 播放控制 -->
     <div class="player__controls">
-      <button class="player__btn" title="单曲循环">
-        <el-icon><Switch /></el-icon>
+      <button class="player__btn player__btn--mode" @click="audio.toggleMode()" :title="modeTitle">
+        <el-icon v-if="audioStore.playMode !== 'shuffle'"><Refresh /></el-icon>
+        <el-icon v-else><Sort /></el-icon>
+        <span v-if="audioStore.playMode === 'singleLoop'" class="mode-badge">1</span>
       </button>
       <button class="player__btn" title="上一首" @click="audio.prevSong()">
         <el-icon><ArrowLeftBold /></el-icon>
@@ -241,6 +254,21 @@ function openPlaylist() {
 .player__btn--play:hover {
   color: #ffffff;
   background: rgba(255, 255, 255, 0.15);
+}
+
+.player__btn--mode {
+  position: relative;
+}
+
+.mode-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  font-size: 8px;
+  font-weight: bold;
+  color: var(--color-primary);
+  line-height: 1;
+  pointer-events: none;
 }
 
 /* * 时间 */

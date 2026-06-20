@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Picture } from '@element-plus/icons-vue'
 // 适配 SongItem 的 MV 字段
 interface Props {
   mvDescription?: string | null
@@ -42,7 +43,13 @@ function formatDuration(seconds: number | null): string {
 <template>
   <div class="mv-card" @click="handleClick">
     <div class="mv-card__cover">
-      <el-image class="mv-card__image" :src="props.coverUrl ?? '/favicon.ico'" fit="cover" />
+      <el-image class="mv-card__image" :src="props.coverUrl ?? '/favicon.ico'" fit="cover" loading="lazy">
+        <template #error>
+          <div class="mv-card__image-fallback">
+            <el-icon :size="32"><Picture /></el-icon>
+          </div>
+        </template>
+      </el-image>
       <div class="mv-card__overlay">
         <span class="mv-card__play-icon"></span>
       </div>
@@ -77,6 +84,16 @@ function formatDuration(seconds: number | null): string {
 .mv-card__image {
   width: 100%;
   height: 100%;
+}
+
+.mv-card__image-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg-hover, #f3e8ff);
+  color: var(--color-text-muted, #9ca3af);
 }
 
 /* Hover overlay */

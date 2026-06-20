@@ -10,6 +10,7 @@ import { useGetCategories } from '@/hooks/category'
 import type { CategoryItem } from '@/hooks/category'
 
 const activeTab = ref(0)
+const loading = ref(false)
 const { fetchCategories } = useGetCategories()
 const categories = ref<CategoryItem[]>([])
 // 动态标签：全部 + 后端返回的分类名称
@@ -51,10 +52,15 @@ function switchTab(index: number) {
 
 // 获取歌曲列表
 async function getSongs(payload: GetSongsPayload) {
-  const request = useGetSongs()
-  const res = await request.fetchSongs(payload)
-  if (res?.code === 200 && res?.data != undefined) {
-    playlist.value = res?.data
+  loading.value = true
+  try {
+    const request = useGetSongs()
+    const res = await request.fetchSongs(payload)
+    if (res?.code === 200 && res?.data != undefined) {
+      playlist.value = res?.data
+    }
+  } finally {
+    loading.value = false
   }
 }
 
@@ -89,6 +95,7 @@ onMounted(async () => {
       </button>
       <!-- 歌曲列表 -->
       <div
+        v-loading="loading"
         class="music-recommend__lists"
         ref="listsRef"
         :style="listsStyle"

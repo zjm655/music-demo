@@ -19,11 +19,17 @@ export const playlistRouter = [
         path: 'my-playlists',
         name: 'MyPlaylists',
         component: () => import('@/views/MyPlaylists.vue'),
+        meta: {
+          requireAuth: true,
+        },
       },
       {
         path: 'playlist-detail',
         name: 'PlaylistDetail',
         component: () => import('@/views/PlaylistDetail.vue'),
+        meta: {
+          requireAuth: true,
+        },
       },
     ],
   },

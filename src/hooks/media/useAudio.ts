@@ -1,5 +1,5 @@
 import { Howl } from 'howler'
-import { useAudioStore, type Song } from '@/stores/audio'
+import { useAudioStore, type Song, type PlayMode } from '@/stores/audio'
 import { useGetSongUnified, type ThirdpartyMeta } from '@/hooks/common'
 import { popup } from '@/utils/popup'
 import { logger } from '@/utils/logger'
@@ -69,7 +69,20 @@ export function useAudio() {
         stopProgressUpdate()
         // 自动播放下一首（播放列表只有一首时不切）
         if (store.playlist.length > 1) {
-          nextSong()
+          switch (store.playMode) {
+            // 列表顺序循环
+            case 'listLoop':
+              nextSong()
+              break
+            // 单曲循环
+            case 'singleLoop':
+              thisSong()
+              break
+            // 随机播放
+            case 'shuffle':
+              randomSong()
+              break
+          }
         }
       },
       onstop: () => {
@@ -208,6 +221,32 @@ export function useAudio() {
     await loadById(prevId)
   }
 
+  // 单曲循环：重新加载并播放当前歌曲
+  const thisSong = async () => {
+    if (store.playlist.length === 0) return
+    const currentId = store.currentSong?.id
+    if (currentId == null) return
+    await loadById(currentId)
+  }
+
+  // 随机播放：随机选一首，避免连续播同一首
+  const randomSong = async () => {
+    if (store.playlist.length === 0) return
+    if (store.playlist.length === 1) {
+      // 只有一首时，等同于单曲循环
+      await thisSong()
+      return
+    }
+    // 随机选一个不等于当前 index 的索引
+    let randomIndex = Math.floor(Math.random() * store.playlist.length)
+    while (randomIndex === store.index) {
+      randomIndex = Math.floor(Math.random() * store.playlist.length)
+    }
+    const randomId = store.playlist[randomIndex]?.id
+    if (randomId == null) return
+    await loadById(randomId)
+  }
+
   // 添加歌曲到下一首并立即播放
   const addNextAndPlay = async (id: number | string, meta?: ThirdpartyMeta) => {
     const songId = String(id)
@@ -240,7 +279,7 @@ export function useAudio() {
 
     // 检查是否已在 playlist
     if (store.playlist.some((s) => String(s.id) === songId)) {
-      popup.message.warning('歌曲已在播放列表中')
+      // popup.message.warning('歌曲已在播放列表中')
       return
     }
 
@@ -250,7 +289,7 @@ export function useAudio() {
 
     if (res.code === 200 && res.data) {
       store.playlist.splice(store.index + 1, 0, res.data.song as unknown as Song)
-      popup.message.success('已添加到下一首播放')
+      // popup.message.success('已添加到下一首播放')
     } else {
       popup.message.error(res.message || '添加歌曲失败')
     }
@@ -325,6 +364,13 @@ export function useAudio() {
     }
   }
 
+  // 切换播放模式：列表循环 → 单曲循环 → 随机播放 → 列表循环
+  const toggleMode = () => {
+    const modes: PlayMode[] = ['listLoop', 'singleLoop', 'shuffle']
+    const currentIndex = modes.indexOf(store.playMode)
+    store.playMode = modes[(currentIndex + 1) % modes.length]!
+  }
+
   // 结束播放
   const unload = () => {
     if (sound) {
@@ -346,11 +392,14 @@ export function useAudio() {
     seek,
     setVolume,
     toggleMute,
+    toggleMode,
     unload,
 
     setPlatlist,
     nextSong,
     prevSong,
+    thisSong,
+    randomSong,
     addSongNext,
     addNext,
     addNextAndPlay,

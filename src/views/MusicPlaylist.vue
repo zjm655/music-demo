@@ -16,7 +16,7 @@ import RightLyric from '@/components/MusicPlaylist/RightLyric.vue'
 <style scoped>
 .music-playlist-main {
   display: flex;
-  height: 87vh;
+  height: 70vh;
   padding: calc(50px - 4vh);
   background: var(--gradient-glass);
   width: 100vw;

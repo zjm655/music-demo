@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useAudio } from '@/hooks/media'
-import { VideoCamera } from '@element-plus/icons-vue'
+import { VideoCamera, Picture } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
 
 interface Props {
@@ -74,7 +74,13 @@ function handleAddNext(e: Event) {
     <span v-else-if="props.index !== undefined" class="song-index">{{ props.index }}</span>
 
     <div class="song-cover-wrapper">
-      <el-image class="song-cover" :src="props.coverUrl" fit="cover" />
+      <el-image class="song-cover" :src="props.coverUrl" fit="cover" loading="lazy">
+        <template #error>
+          <div class="song-cover-fallback">
+            <el-icon :size="20"><Picture /></el-icon>
+          </div>
+        </template>
+      </el-image>
       <div class="song-cover-overlay">
         <span class="song-play-icon"></span>
       </div>
@@ -184,6 +190,16 @@ function handleAddNext(e: Event) {
 .song-cover {
   width: 100%;
   height: 100%;
+}
+
+.song-cover-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg-hover, #f3e8ff);
+  color: var(--color-text-muted, #9ca3af);
 }
 
 .song-cover-overlay {

@@ -17,6 +17,8 @@ const store = usePlaylistDetailStore()
 
 const playlist = ref<PlaylistDetail | null>(null)
 const header = ['#', '', '', '', '', '', '']
+const loading = ref(false)
+const submitting = ref(false)
 
 const { fetchPlaylist } = useGetPlaylist()
 const { fetchPlaylists } = useGetPlaylists()
@@ -41,9 +43,14 @@ async function loadPlaylist() {
   const id = Number(route.query.id)
   if (!id) return
   store.setPlaylistId(id)
-  const res = await fetchPlaylist({ id })
-  if (res?.code === 200 && res.data) {
-    playlist.value = res.data
+  loading.value = true
+  try {
+    const res = await fetchPlaylist({ id })
+    if (res?.code === 200 && res.data) {
+      playlist.value = res.data
+    }
+  } finally {
+    loading.value = false
   }
 }
 
@@ -131,74 +138,90 @@ async function openDialog(type: 'add' | 'move') {
 // 确认添加到歌单
 async function confirmAddToPlaylist() {
   if (!targetPlaylistId.value) return
-  const songs = getSelectedSongs()
-  let successCount = 0
-  for (const song of songs) {
-    let res: { code?: number } | null = null
-    if (song.source === 'local') {
-      res = await operatePlaylistSong({
-        playlistId: targetPlaylistId.value,
-        songId: Number(song.id),
-        action: 'add',
-      })
-    } else {
-      res = await addExternalSong({
-        playlistId: targetPlaylistId.value,
-        songId: String(song.id),
-        source: song.source,
-        name: song.title,
-        artist: song.artist ?? undefined,
-        cover: song.coverUrl ?? undefined,
-      })
+  showAddDialog.value = false
+  submitting.value = true
+  popup.message.info('正在添加到歌单...')
+  try {
+    const songs = getSelectedSongs()
+    let successCount = 0
+    for (const song of songs) {
+      let res: { code?: number } | null = null
+      if (song.source === 'local') {
+        res = await operatePlaylistSong({
+          playlistId: targetPlaylistId.value,
+          songId: Number(song.id),
+          action: 'add',
+        })
+      } else {
+        res = await addExternalSong({
+          playlistId: targetPlaylistId.value,
+          songId: String(song.id),
+          source: song.source,
+          name: song.title,
+          artist: song.artist ?? undefined,
+          cover: song.coverUrl ?? undefined,
+        })
+      }
+      if (res?.code === 200) successCount++
     }
-    if (res?.code === 200) successCount++
-  }
-  if (successCount > 0) {
-    popup.message.success(`已添加 ${successCount} 首歌曲到歌单`)
-    showAddDialog.value = false
-    store.clearSelection()
+    if (successCount > 0) {
+      popup.message.success(`已添加 ${successCount} 首歌曲到歌单`)
+      store.clearSelection()
+    }
+  } finally {
+    submitting.value = false
   }
 }
 
 // 确认移动到歌单
 async function confirmMoveToPlaylist() {
   if (!targetPlaylistId.value || !store.playlistId) return
-  const songs = getSelectedSongs()
-  let successCount = 0
-  for (const song of songs) {
-    // 先添加到目标歌单
-    let addRes: { code?: number } | null = null
-    if (song.source === 'local') {
-      addRes = await operatePlaylistSong({
-        playlistId: targetPlaylistId.value,
-        songId: Number(song.id),
-        action: 'add',
-      })
-    } else {
-      addRes = await addExternalSong({
-        playlistId: targetPlaylistId.value,
-        songId: String(song.id),
-        source: song.source,
-        name: song.title,
-        artist: song.artist ?? undefined,
-        cover: song.coverUrl ?? undefined,
-      })
+  showMoveDialog.value = false
+  submitting.value = true
+  popup.message.info('正在移动到歌单...')
+  try {
+    const songs = getSelectedSongs()
+    let successCount = 0
+    for (const song of songs) {
+      let addRes: { code?: number } | null = null
+      if (song.source === 'local') {
+        addRes = await operatePlaylistSong({
+          playlistId: targetPlaylistId.value,
+          songId: Number(song.id),
+          action: 'add',
+        })
+      } else {
+        addRes = await addExternalSong({
+          playlistId: targetPlaylistId.value,
+          songId: String(song.id),
+          source: song.source,
+          name: song.title,
+          artist: song.artist ?? undefined,
+          cover: song.coverUrl ?? undefined,
+        })
+      }
+      if (addRes?.code === 200) {
+        const rmRes = await remove({
+          playlistId: store.playlistId,
+          songId: song.id,
+          source: song.source,
+        })
+        if (rmRes?.code === 200) {
+          successCount++
+          // 实时从列表移除
+          const idx = playlist.value?.songs.findIndex((s) => s.source === song.source && String(s.id) === String(song.id))
+          if (idx !== undefined && idx !== -1) {
+            playlist.value?.songs.splice(idx, 1)
+          }
+        }
+      }
     }
-    if (addRes?.code === 200) {
-      // 再从当前歌单删除
-      await remove({
-        playlistId: store.playlistId,
-        songId: song.id,
-        source: song.source,
-      })
-      successCount++
+    if (successCount > 0) {
+      popup.message.success(`已移动 ${successCount} 首歌曲`)
+      store.clearSelection()
     }
-  }
-  if (successCount > 0) {
-    popup.message.success(`已移动 ${successCount} 首歌曲`)
-    showMoveDialog.value = false
-    store.clearSelection()
-    await loadPlaylist()
+  } finally {
+    submitting.value = false
   }
 }
 
@@ -207,20 +230,32 @@ async function confirmDelete() {
   if (store.selectedCount === 0) return
   const confirmed = await popup.confirm(`确定删除选中的 ${store.selectedCount} 首歌曲？`)
   if (!confirmed) return
+  submitting.value = true
+  popup.message.info('正在删除...')
   const songs = getSelectedSongs()
   let successCount = 0
-  for (const song of songs) {
-    const res = await remove({
-      playlistId: store.playlistId!,
-      songId: song.id,
-      source: song.source,
-    })
-    if (res?.code === 200) successCount++
-  }
-  if (successCount > 0) {
-    popup.message.success(`已删除 ${successCount} 首歌曲`)
-    store.clearSelection()
-    await loadPlaylist()
+  try {
+    for (const song of songs) {
+      const res = await remove({
+        playlistId: store.playlistId!,
+        songId: song.id,
+        source: song.source,
+      })
+      if (res?.code === 200) {
+        successCount++
+        // 实时从列表移除
+        const idx = playlist.value?.songs.findIndex((s) => s.source === song.source && String(s.id) === String(song.id))
+        if (idx !== undefined && idx !== -1) {
+          playlist.value?.songs.splice(idx, 1)
+        }
+      }
+    }
+    if (successCount > 0) {
+      popup.message.success(`已删除 ${successCount} 首歌曲`)
+      store.clearSelection()
+    }
+  } finally {
+    submitting.value = false
   }
 }
 
@@ -254,22 +289,22 @@ onMounted(() => {
       <!-- 批量操作栏 -->
       <div v-if="playlist && playlist.songs.length > 0" class="playlist-detail__batch-bar">
         <template v-if="store.isBatchMode">
-          <el-button size="small" @click="toggleSelectAll">
+          <el-button size="small" @click="toggleSelectAll" :disabled="submitting">
             {{ isAllSelected ? '取消全选' : '全选' }}
           </el-button>
-          <el-button size="small" @click="addToPlayingList" :disabled="store.selectedCount === 0">
+          <el-button size="small" @click="addToPlayingList" :disabled="store.selectedCount === 0 || submitting">
             加入播放列表
           </el-button>
-          <el-button size="small" @click="openDialog('add')" :disabled="store.selectedCount === 0">
+          <el-button size="small" @click="openDialog('add')" :disabled="store.selectedCount === 0 || submitting">
             添加到歌单
           </el-button>
-          <el-button size="small" @click="openDialog('move')" :disabled="store.selectedCount === 0">
+          <el-button size="small" @click="openDialog('move')" :disabled="store.selectedCount === 0 || submitting">
             移动到歌单
           </el-button>
-          <el-button size="small" type="danger" @click="confirmDelete" :disabled="store.selectedCount === 0">
+          <el-button size="small" type="danger" @click="confirmDelete" :disabled="store.selectedCount === 0 || submitting">
             删除
           </el-button>
-          <el-button size="small" type="primary" @click="store.toggleBatchMode()">
+          <el-button size="small" type="primary" @click="store.toggleBatchMode()" :disabled="submitting">
             退出复选
           </el-button>
         </template>
@@ -279,8 +314,8 @@ onMounted(() => {
       </div>
     </div>
 
-    <div class="playlist-detail__songs">
-      <SongList :is-null="!playlist || playlist.songs.length === 0" :header="header">
+    <div class="playlist-detail__songs" v-loading="loading">
+      <SongList :is-null="!loading && (!playlist || playlist.songs.length === 0)" :header="header">
         <template #default>
           <div
             v-for="(song, index) in playlist?.songs || []"
@@ -335,7 +370,7 @@ onMounted(() => {
       </el-radio-group>
       <template #footer>
         <el-button @click="showAddDialog = false">取消</el-button>
-        <el-button type="primary" @click="confirmAddToPlaylist">确定</el-button>
+        <el-button type="primary" @click="confirmAddToPlaylist" :loading="submitting">确定</el-button>
       </template>
     </el-dialog>
 
@@ -354,7 +389,7 @@ onMounted(() => {
       </el-radio-group>
       <template #footer>
         <el-button @click="showMoveDialog = false">取消</el-button>
-        <el-button type="primary" @click="confirmMoveToPlaylist">确定</el-button>
+        <el-button type="primary" @click="confirmMoveToPlaylist" :loading="submitting">确定</el-button>
       </template>
     </el-dialog>
   </div>

@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { homeRouter } from './modules/home'
 import { playlistRouter } from './modules/playlist'
 import { useAudioStore } from '@/stores/audio'
+import { useUserStore } from '@/stores/user'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -10,13 +11,17 @@ const router = createRouter({
     ...homeRouter,
     ...playlistRouter,
     { path: '/:pathMatch(.*)*', redirect: '/home' },
-  ] ,
+  ],
 })
 
-router.beforeEach((to, _from) =>   {
-  const token = localStorage.getItem('token' )
-  if (!token && to.meta.requireAuth) {
+router.beforeEach((to, _from) => {
+  const token = localStorage.getItem('token')
+  if ((!token || !useUserStore().isLogin) && to.meta.requireAuth) {
     return '/login'
+  }
+
+  if (to.path === '/login' && token) {
+    return '/home'
   }
 
   if (to.meta.hideAudio) {
@@ -24,13 +29,6 @@ router.beforeEach((to, _from) =>   {
   } else {
     useAudioStore().showPlaylist = true
   }
-  // else if (to.path === '/login' && token) {
-  //   return '/home'
-  // }
-
-  // if ((to.path === '/login' || to.path === '/register') && token) {
-  //   return '/home'
-  // }
 
   return true
 })

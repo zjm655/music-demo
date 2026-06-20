@@ -23,6 +23,8 @@ export interface Song {
   vid?: string | null
 }
 
+export type PlayMode = 'listLoop' | 'singleLoop' | 'shuffle'
+
 export const useAudioStore = defineStore('audio', () => {
   // 播放列表
   const playlist = ref<Song[]>([])
@@ -52,6 +54,9 @@ export const useAudioStore = defineStore('audio', () => {
   // 播放列表面板
   const showPlaylist = ref(true)
 
+  // 播放的模式
+  const playMode = ref<PlayMode>('listLoop')
+
   function reset() {
     index.value = 0
     isPlaying.value = false
@@ -76,6 +81,7 @@ export const useAudioStore = defineStore('audio', () => {
     volume,
     isMuted,
     showPlaylist,
+    playMode,
     reset,
   }
 })

@@ -1,13 +1,11 @@
 <script setup lang="ts">
 import HomeFooter from '@/components/MusicHome/HomeFooter.vue'
-import PlaylistHot from '@/components/PlaylistHot/PlaylistHot.vue'
 import MusicListCards from '@/components/MusicRecommend/MusicListCards.vue'
 import MvListCards from '@/components/MvRecommend/MvListCards.vue'
 </script>
 
 <template>
   <div class="home-main">
-    <playlist-hot />
     <music-list-cards />
     <mv-list-cards />
   </div>

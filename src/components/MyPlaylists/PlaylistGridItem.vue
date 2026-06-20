@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Delete } from '@element-plus/icons-vue'
+import { useThemeStore } from '@/stores/theme'
 
 interface Props {
   id: number | string
@@ -31,7 +32,12 @@ function handleDelete(e: Event) {
 <template>
   <div class="playlist-grid-item" @click="handleClick">
     <div class="playlist-grid-item__cover-wrapper">
-      <el-image class="playlist-grid-item__cover" :src="props.coverUrl || '/favicon.ico'" fit="cover" />
+      <el-image
+        class="playlist-grid-item__cover"
+        :src="props.coverUrl || useThemeStore().currentBackground"
+        fit="cover"
+        loading="lazy"
+      />
       <div class="playlist-grid-item__overlay">
         <button class="playlist-grid-item__delete" title="删除歌单" @click="handleDelete">
           <el-icon :size="14"><Delete /></el-icon>
@@ -99,7 +105,9 @@ function handleDelete(e: Event) {
   color: #e74c3c;
   cursor: pointer;
   pointer-events: auto;
-  transition: transform var(--transition-fast, 0.15s), background var(--transition-fast, 0.15s);
+  transition:
+    transform var(--transition-fast, 0.15s),
+    background var(--transition-fast, 0.15s);
 }
 
 .playlist-grid-item__delete:hover {

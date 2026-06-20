@@ -26,6 +26,7 @@ const isBatchMode = ref(false)
 const playlists = ref<PlaylistItem[]>([])
 const showPlaylistDialog = ref(false)
 const selectedPlaylistId = ref<number | null>(null)
+const submitting = ref(false)
 const { fetchPlaylists } = useGetPlaylists()
 const { operatePlaylistSong } = useOperatePlaylistSong()
 const { addExternalSong } = useAddExternalSong()
@@ -153,42 +154,47 @@ async function confirmAddToPlaylist() {
     return
   }
 
-  const selectedKeys = searchStore.getSelectedKeys()
-  let successCount = 0
+  showPlaylistDialog.value = false
+  submitting.value = true
+  popup.message.info('正在添加到歌单...')
+  try {
+    const selectedKeys = searchStore.getSelectedKeys()
+    let successCount = 0
 
-  // 顺序调用，避免 hook 的 isLoading 锁拦截并发请求
-  for (const key of selectedKeys) {
-    const [source, ...idParts] = key.split('-')
-    const id = source === 'local' ? Number(idParts.join('-')) : idParts.join('-')
-    const song = searchStore.allResults.find((s) => s.source === source && String(s.id) === String(id))
-    if (!song) continue
+    for (const key of selectedKeys) {
+      const [source, ...idParts] = key.split('-')
+      const id = source === 'local' ? Number(idParts.join('-')) : idParts.join('-')
+      const song = searchStore.allResults.find((s) => s.source === source && String(s.id) === String(id))
+      if (!song) continue
 
-    let res: { code?: number } | null = null
-    if (source === 'local') {
-      res = await operatePlaylistSong({
-        playlistId: selectedPlaylistId.value,
-        songId: Number(id),
-        action: 'add',
-      })
-    } else {
-      res = await addExternalSong({
-        playlistId: selectedPlaylistId.value,
-        songId: String(id),
-        source: 'tencent',
-        name: song.title,
-        artist: song.artist ?? undefined,
-        cover: song.coverUrl ?? undefined,
-      })
+      let res: { code?: number } | null = null
+      if (source === 'local') {
+        res = await operatePlaylistSong({
+          playlistId: selectedPlaylistId.value,
+          songId: Number(id),
+          action: 'add',
+        })
+      } else {
+        res = await addExternalSong({
+          playlistId: selectedPlaylistId.value,
+          songId: String(id),
+          source: 'tencent',
+          name: song.title,
+          artist: song.artist ?? undefined,
+          cover: song.coverUrl ?? undefined,
+        })
+      }
+      if (res?.code === 200) successCount++
     }
-    if (res?.code === 200) successCount++
-  }
 
-  if (successCount > 0) {
-    popup.message.success(`已添加 ${successCount} 首歌曲到歌单`)
-    searchStore.clearSelection()
-    showPlaylistDialog.value = false
-  } else {
-    popup.message.error('添加失败，请重试')
+    if (successCount > 0) {
+      popup.message.success(`已添加 ${successCount} 首歌曲到歌单`)
+      searchStore.clearSelection()
+    } else {
+      popup.message.error('添加失败，请重试')
+    }
+  } finally {
+    submitting.value = false
   }
 }
 
@@ -228,16 +234,16 @@ watch(() => route.query.keyword, (newKeyword) => {
         <!-- 批量操作按钮 -->
         <div v-if="searchStore.allResults.length > 0" class="batch-actions">
           <template v-if="isBatchMode">
-            <el-button size="small" @click="toggleSelectAll">
+            <el-button size="small" @click="toggleSelectAll" :disabled="submitting">
               {{ isAllSelected ? '取消全选' : '全选当前页' }}
             </el-button>
-            <el-button size="small" @click="addToPlaylist" :disabled="searchStore.selectedCount === 0">
+            <el-button size="small" @click="addToPlaylist" :disabled="searchStore.selectedCount === 0 || submitting">
               加入播放列表
             </el-button>
-            <el-button size="small" @click="openPlaylistSelect" :disabled="searchStore.selectedCount === 0">
+            <el-button size="small" @click="openPlaylistSelect" :disabled="searchStore.selectedCount === 0 || submitting">
               添加到歌单
             </el-button>
-            <el-button size="small" type="primary" @click="toggleBatchMode">
+            <el-button size="small" type="primary" @click="toggleBatchMode" :disabled="submitting">
               退出复选
             </el-button>
           </template>
@@ -313,7 +319,7 @@ watch(() => route.query.keyword, (newKeyword) => {
       </el-radio-group>
       <template #footer>
         <el-button @click="showPlaylistDialog = false">取消</el-button>
-        <el-button type="primary" @click="confirmAddToPlaylist">确定</el-button>
+        <el-button type="primary" @click="confirmAddToPlaylist" :loading="submitting">确定</el-button>
       </template>
     </el-dialog>
   </div>
