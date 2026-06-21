@@ -3,6 +3,7 @@ import { ref, computed, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import type { FormInstance, FormRules } from 'element-plus'
 import { useLogin, useRegister } from '@/hooks/user'
+import { popup } from '@/utils/popup'
 
 const router = useRouter()
 const activeTab = ref('login')
@@ -25,7 +26,10 @@ const handleLogin = async () => {
   if (!valid) return
   const res = await login(loginForm)
   if (res?.code === 200) {
+    popup.message.success('登录成功')
     router.push('/home')
+  } else {
+    popup.message.error(res?.message || '登录失败')
   }
 }
 
@@ -109,12 +113,15 @@ const handleRegister = async () => {
   }
   const res = await register(form)
   if (res?.code === 200) {
+    popup.message.success('注册成功，请登录')
     activeTab.value = 'login'
     // 清空注册表单
     registerForm.username = ''
     registerForm.email = ''
     registerForm.password = ''
     registerForm.confirmPassword = ''
+  } else {
+    popup.message.error(res?.message || '注册失败')
   }
 }
 </script>

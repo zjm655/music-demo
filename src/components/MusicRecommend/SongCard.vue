@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useAudio } from '@/hooks/media'
+import { popup } from '@/utils/popup'
 import { VideoCamera, Picture } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
 
@@ -53,14 +54,19 @@ function handleMvClick(e: Event) {
   router.push({ path: '/video', query })
 }
 
-function handleAddNext(e: Event) {
+async function handleAddNext(e: Event) {
   e.stopPropagation()
-  audio.addNext(props.id, {
+  const added = await audio.addNext(props.id, {
     title: props.title,
     artist: props.artist ?? undefined,
     album: props.album ?? undefined,
     coverUrl: props.coverUrl ?? undefined,
   })
+  if (added) {
+    popup.message.success('已添加到下一首')
+  } else {
+    popup.message.warning('歌曲已在播放列表中')
+  }
 }
 </script>
 

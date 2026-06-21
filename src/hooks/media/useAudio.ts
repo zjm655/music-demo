@@ -273,14 +273,13 @@ export function useAudio() {
     }
   }
 
-  // 添加歌曲到下一首（不立即播放）
-  const addNext = async (id: number | string, meta?: ThirdpartyMeta) => {
+  // 添加歌曲到下一首（不立即播放），返回是否成功添加
+  const addNext = async (id: number | string, meta?: ThirdpartyMeta): Promise<boolean> => {
     const songId = String(id)
 
     // 检查是否已在 playlist
     if (store.playlist.some((s) => String(s.id) === songId)) {
-      // popup.message.warning('歌曲已在播放列表中')
-      return
+      return false
     }
 
     // 获取歌曲信息
@@ -289,15 +288,11 @@ export function useAudio() {
 
     if (res.code === 200 && res.data) {
       store.playlist.splice(store.index + 1, 0, res.data.song as unknown as Song)
-      // popup.message.success('已添加到下一首播放')
+      return true
     } else {
       popup.message.error(res.message || '添加歌曲失败')
+      return false
     }
-  }
-
-  // 添加歌曲到下一首（已有歌曲对象）
-  const addSongNext = (song: Song) => {
-    store.playlist.splice(store.index + 1, 0, song)
   }
 
   // 添加歌曲数组到末尾
@@ -400,7 +395,6 @@ export function useAudio() {
     prevSong,
     thisSong,
     randomSong,
-    addSongNext,
     addNext,
     addNextAndPlay,
     addSongsToEnd,

@@ -1,6 +1,7 @@
 import { getPlaylists, getPlaylistsAbort } from '@/api/playlist'
 import type { GetPlaylistsResPayload } from '@/api/playlist'
 import { useHandleRes, createResCfg } from '@/hooks/request'
+import { prefixLocalUrls } from '@/utils/prefixUrl'
 
 export type { GetPlaylistsResPayload }
 
@@ -16,6 +17,9 @@ export const useGetPlaylists = () => {
   const { execute, isLoading } = useHandleRes<void, GetPlaylistsResPayload>(cfg)
   const fetchPlaylists = async () => {
     const res = await execute()
+    if (res?.data) {
+      res.data.forEach((item) => prefixLocalUrls(item, ['coverUrl']))
+    }
     return { code: res?.code, message: res?.message, data: res?.data }
   }
   return { isLoading, fetchPlaylists, abort: getPlaylistsAbort }

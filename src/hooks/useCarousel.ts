@@ -33,14 +33,12 @@ export function useCarousel(options: CarouselOptions) {
   })
 
   function prevPage() {
-    console.log('prevPage clicked, totalPages:', totalPages.value, 'currentPage:', currentPage.value)
     const total = totalPages.value
     if (total <= 0) return
     currentPage.value = (currentPage.value - 1 + total) % total
   }
 
   function nextPage() {
-    console.log('nextPage clicked, totalPages:', totalPages.value, 'currentPage:', currentPage.value)
     const total = totalPages.value
     if (total <= 0) return
     currentPage.value = (currentPage.value + 1) % total

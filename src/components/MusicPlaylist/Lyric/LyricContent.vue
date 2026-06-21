@@ -82,7 +82,7 @@ async function loadLyrics() {
       // 本地歌曲没有歌词 API
       hasError.value = true
     }
-  } catch (e) {
+  } catch {
     hasError.value = true
   } finally {
     isLoading.value = false
