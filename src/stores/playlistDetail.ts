@@ -22,7 +22,11 @@ export const usePlaylistDetailStore = defineStore('playlistDetail', () => {
   // 切换选中状态
   function toggle(source: string, id: number | string) {
     const key = `${source}-${id}`
-    selectedMap[key] ? delete selectedMap[key] : (selectedMap[key] = true)
+    if (selectedMap[key]) {
+      delete selectedMap[key]
+    } else {
+      selectedMap[key] = true
+    }
   }
 
   // 清空选中
