@@ -1,8 +1,11 @@
 import { getSong, getSongAbort } from '@/api/song'
 import type { GetSongPayload, GetSongResPayload } from '@/api/song'
 import { useHandleRes, createResCfg } from '@/hooks/request'
+import { prefixLocalUrls } from '@/utils/prefixUrl'
 
 export type { GetSongPayload, GetSongResPayload }
+
+const URL_FIELDS = ['coverUrl', 'audioUrl', 'mvUrl'] as const
 
 // 获取歌曲详情 hook
 export const useGetSong = () => {
@@ -17,6 +20,9 @@ export const useGetSong = () => {
   // 执行函数：获取歌曲详情
   const fetchSong = async (payload: GetSongPayload) => {
     const res = await execute(payload)
+    if (res?.data) {
+      prefixLocalUrls(res.data, [...URL_FIELDS])
+    }
     return { code: res?.code, message: res?.message, data: res?.data }
   }
   return { isLoading, fetchSong, abort: getSongAbort }
