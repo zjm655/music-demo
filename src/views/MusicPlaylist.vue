@@ -18,7 +18,7 @@ import RightLyric from '@/components/MusicPlaylist/RightLyric.vue'
   display: flex;
   height: 70vh;
   padding: calc(50px - 4vh);
-  background: var(--gradient-glass);
+  /* background: var(--gradient-glass); */
   width: 100vw;
   margin: 0 auto;
 }
